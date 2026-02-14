@@ -15,7 +15,9 @@ import frc.robot.Constants;
 import frc.robot.Constants.DemoConstants;
 import frc.robot.Constants.PathConstants;
 import frc.robot.Constants.RobotConfig;
+import frc.robot.Constants.LiftConstants.LiftPosition;
 import frc.robot.subsystems.InputGetter;
+import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.Path;
 import frc.robot.util.WingPoseEstimator;
@@ -27,7 +29,7 @@ public class DemoDrive extends SequentialCommandGroup {
     Supplier<Integer> wingApproximateToUse;
 
     /** Creates a new DemoDrive. */
-    public DemoDrive(Swerve swerve, WingPoseEstimator wingPoseEstimator, InputGetter inputGetter) {
+    public DemoDrive(Swerve swerve, Lift lift, WingPoseEstimator wingPoseEstimator, InputGetter inputGetter) {
         isOtherRobotFinished = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.getOpposite().toString()).getBooleanTopic("autodrive at target").subscribe(false);
         
         // have the master determine which wing position is closer
@@ -51,11 +53,14 @@ public class DemoDrive extends SequentialCommandGroup {
             new AutoDrive(swerve, () -> DemoConstants.wingApproximates[wingApproximateToUse.get()], true), // follow path to approximate wing position
             new AutoDrive(swerve, () -> wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[wingApproximateToUse.get()]), false), // PID to exact wing position
             new WaitUntilCommand(isOtherRobotFinished::get), // wait for other robot to finish
-            // new WaitCommand(5), // wait 5 seconds for demo purposes
-            // new SyncOffsets(swerve).withTimeout(1), // sync offsets TODO: 1 second is random
-            new InstantCommand(RobotConfig::resetOffsetPositions),
+            lift.setLiftState(LiftPosition.pickup), // lift up
+            new WaitCommand(5), // someone puts the thing on the lift
+            lift.setLiftState(LiftPosition.place), // lift down
+            // new SyncOffsets(swerve).withTimeout(1), // sync offsets (unnecessary)
+            new InstantCommand(RobotConfig::resetOffsetPositions), // sets ofsets to original
             // new TandemDrive(swerve, inputGetter::getJoystickVelocity).until(inputGetter::getRightBumper), // tandem drive with other robot manually
-            new FollowPath(swerve, new Path(PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead), DemoConstants.stationPosition) // follow path back to start
+            new FollowPath(swerve, new Path(PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead), DemoConstants.stationPosition) // follow path to station
+
         );
     }
 }

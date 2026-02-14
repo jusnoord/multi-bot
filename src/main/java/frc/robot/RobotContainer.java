@@ -38,6 +38,7 @@ import frc.robot.util.Path;
 import frc.robot.util.WingPoseEstimator;
 import frc.robot.subsystems.InputGetter;
 import frc.robot.subsystems.InputSender;
+import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.PhotonVision;
 
 /**
@@ -49,6 +50,7 @@ public class RobotContainer {
     private InputGetter inputGetter;
     private PhotonVision photonVision;
 	private WingPoseEstimator wingPoseEstimator;
+	private Lift lift;
 	private CommandXboxController temp = new CommandXboxController(0);
 
 	public RobotContainer() {
@@ -62,6 +64,7 @@ public class RobotContainer {
 		}
 		wingPoseEstimator = new WingPoseEstimator();
 		photonVision = new PhotonVision(swerve, wingPoseEstimator);
+		lift = new Lift();
 		// swerve.setDefaultCommand(new IndependentDrive(swerve, () -> new Pose2d(1, 1, new Rotation2d(43)), () -> new Pose2d(1, 1, new Rotation2d(43)), () -> new Pose2d(1, 1, new Rotation2d(43))));
 		// new Trigger(() -> inputGetter.getBButton()).onTrue(new TandemDrive(swerve, inputGetter::getJoystickVelocity).ignoringDisable(true));
 		// new Trigger(() -> inputGetter.getXButton()).onTrue(RobotConfig.reset());
@@ -78,7 +81,7 @@ public class RobotContainer {
 		new Trigger(inputGetter::getXButton).onTrue(new SyncOffsets(swerve).withTimeout(1));
 		new Trigger(inputGetter::getLeftBumper).whileTrue(new TandemDrive(swerve, inputGetter::getJoystickVelocity));
 		new Trigger(inputGetter::getRightBumper).whileTrue(new IndependentDrive(swerve, () -> inputGetter.getLeftJoystick(), () -> inputGetter.getRightJoystick()));
-		new Trigger(inputGetter::getYButton).whileTrue(new DemoDrive(swerve, wingPoseEstimator, inputGetter));
+		new Trigger(inputGetter::getYButton).whileTrue(new DemoDrive(swerve, lift, wingPoseEstimator, inputGetter));
 		
 		// swerve.setDefaultCommand(new DemoDrive(swerve, wingPoseEstimator, inputGetter));
 

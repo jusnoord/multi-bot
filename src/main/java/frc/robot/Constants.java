@@ -61,6 +61,19 @@ public final class Constants {
 	 * Includes pod configurations, camera names, and kinematics.
 	 */
 	public final class RobotMap {
+		//lift
+		public static final int liftMotorID = 30;
+		public static final int canRangeID = 29; //lowk forgot
+		public static final boolean liftInvert = false;
+		public static final double liftStatorLimit = 40; // shrug
+		public static final boolean liftBrake = true;
+		public static final double liftEncoderToMechanismRatio = 1; // TODO: fix
+		public static final double liftRotorToEncoderRatio = 1; // TODO: fix
+
+		// lift PID gains
+		public static final double liftkP = 0.5;
+		public static final double liftkI = 0.0;
+		public static final double liftkD = 0.0;
 
 
 		public static enum CameraType {
@@ -109,7 +122,6 @@ public final class Constants {
 		public static enum CameraName {
 			slaveFront, masterFront, masterBack, masterTop, slaveBack, slaveTop
 		}
-
 
 
 
@@ -248,6 +260,8 @@ public final class Constants {
 		public static final double velocitykP_angle = 0.4;
 		public static final double velocitykI_angle = 0.0;
 		public static final double velocitykD_angle = 0.0;
+
+
 	}
 
 
@@ -413,5 +427,19 @@ public final class Constants {
         public static final double driveMotorRampRate = 0.0;
 
 		public static final boolean driveInvert = false; 
+	}
+
+	public final class LiftConstants {
+		public static final double liftMaxHeight = 1; // meters
+		public static final double canRangeOffset = 0.02; // what the canrange reads at lift-zero
+		public static final double positionTolerance = 0.01; // meters
+
+		public enum LiftPosition { //meters
+			ground(0.01), pickup(0.9), place(0.7); // literally completely random values
+			public final double height;
+			private LiftPosition(double height) {
+				this.height = height;
+			}
+		}
 	}
 }
