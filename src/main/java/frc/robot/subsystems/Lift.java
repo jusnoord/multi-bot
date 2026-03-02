@@ -18,7 +18,7 @@ import frc.robot.Constants.LiftConstants.LiftPosition;
 public class Lift extends SubsystemBase {
     private TalonFX liftMotor;
     private CANrange canRange;
-    private TalonFXConfiguration config;
+    private TalonFXConfiguration config = new TalonFXConfiguration();
     private PositionVoltage pid;
     private double targetPosition = 0;
 
