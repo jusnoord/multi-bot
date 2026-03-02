@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -63,15 +65,15 @@ public final class Constants {
 	public final class RobotMap {
 		//lift
 		public static final int liftMotorID = 30;
-		public static final int canRangeID = 29; //lowk forgot
+		public static final int canRangeID = 31;
 		public static final boolean liftInvert = false;
 		public static final double liftStatorLimit = 40; // shrug
 		public static final boolean liftBrake = true;
-		public static final double liftEncoderToMechanismRatio = 1; // TODO: fix
-		public static final double liftRotorToEncoderRatio = 1; // TODO: fix
+		public static final double liftEncoderToMechanismRatio = 50/(Inches.of(1.25).in(Centimeters) * Math.PI); //50:1 gearbox, 1.25" drum
+		public static final double liftRotorToEncoderRatio = 1;
 
 		// lift PID gains
-		public static final double liftkP = 0.5;
+		public static final double liftkP = 3.8;
 		public static final double liftkI = 0.0;
 		public static final double liftkD = 0.0;
 
@@ -388,14 +390,14 @@ public final class Constants {
 		public static final SingleRobotConfig[] robotConfigs = new SingleRobotConfig[] { 
 			new SingleRobotConfig(new PodConfig[] { // first (red) robot
 				new PodConfig(8, 4, 24, 0.3184, new Translation2d(wheelBase / 2, -trackWidth / 2)), // BL
-				new PodConfig(5, 9, 22, 0.7168, new Translation2d(-wheelBase / 2, trackWidth / 2)), // FR
-				new PodConfig(10, 6, 21, 0.5891, new Translation2d(wheelBase / 2, trackWidth / 2)), // BR
-				new PodConfig(7, 11, 23, 0.2756, new Translation2d(-wheelBase / 2, -trackWidth / 2)) // FL - +
+				new PodConfig(5, 9, 22, 0.2172, new Translation2d(-wheelBase / 2, trackWidth / 2)), // FR
+				new PodConfig(10, 6, 21, -0.0950, new Translation2d(wheelBase / 2, trackWidth / 2)), // BR
+				new PodConfig(7, 11, 23, 0.1038, new Translation2d(-wheelBase / 2, -trackWidth / 2)) // FL - +
 			}, 50.0, 0.0, 0.5, 0.1, 2.66, 0.0),
 			new SingleRobotConfig(new PodConfig[] { // second (green) robot
 				new PodConfig(8, 4, 24, 0.0591, new Translation2d(wheelBase / 2, -trackWidth / 2)), // BL
-				new PodConfig(5, 9, 22, 0.7627, new Translation2d(-wheelBase / 2, trackWidth / 2)), // FR
-				new PodConfig(10, 6, 21, -0.6096, new Translation2d(wheelBase / 2, trackWidth / 2)), // BR
+				new PodConfig(5, 9, 22, 0.2637, new Translation2d(-wheelBase / 2, trackWidth / 2)), // FR
+				new PodConfig(10, 6, 21, -0.1204, new Translation2d(wheelBase / 2, trackWidth / 2)), // BR
 				new PodConfig(7, 11, 23, 0.3977, new Translation2d(-wheelBase / 2, -trackWidth / 2)) // FL - +
 			}, 50.0, 0.0, 0.5, 0.1, 2.66, 0.0)
 		};
@@ -430,13 +432,14 @@ public final class Constants {
 	}
 
 	public final class LiftConstants {
-		public static final double liftMaxHeight = 1; // meters
-		public static final double canRangeOffset = 0.02; // what the canrange reads at lift-zero
-		public static final double positionTolerance = 0.01; // meters
+		public static final double liftMaxHeight = 30; // centimeters
+		public static final double canRangeOffset = 0.1; // what the canrange reads at lift-zero
+		public static final double positionTolerance = 0.01; // centimeters
+		public static final double maxOutput = 2.4; //volts, 20% max output
 
 		public enum LiftPosition { //meters
-			ground(0.01), pickup(0.9), place(0.7); // literally completely random values
-			public final double height;
+			ground(1), pickup(15), place(6);
+ 			public final double height;
 			private LiftPosition(double height) {
 				this.height = height;
 			}

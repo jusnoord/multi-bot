@@ -24,6 +24,7 @@ import frc.robot.Constants.JoystickConstants;
 import frc.robot.Constants.PathConstants;
 import frc.robot.Constants.RobotMap.CameraName;
 import frc.robot.Constants.RobotConfig;
+import frc.robot.Constants.LiftConstants.LiftPosition;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DemoDrive;
 import frc.robot.commands.DriveCommand;
@@ -77,11 +78,13 @@ public class RobotContainer {
 		// new Trigger(inputGetter::getStartButton).whileTrue(new InstantCommand(swerve::resetPods, swerve));
 		// Pose2d wingApproximate = Constants.IS_MASTER ? DemoConstants.masterWingApproximate : DemoConstants.slaveWingApproximate;
 		// new Trigger(inputGetter::getAButton).onTrue(new AutoDrive(swerve, () -> wingApproximate, true));
-		new Trigger(inputGetter::getBButton).onTrue(new AutoDrive(swerve, wingPoseEstimator::getEstimatedPose, false));
-		new Trigger(inputGetter::getXButton).onTrue(new SyncOffsets(swerve).withTimeout(1));
+		// new Trigger(inputGetter::getBButton).onTrue(new AutoDrive(swerve, wingPoseEstimator::getEstimatedPose, false));
 		new Trigger(inputGetter::getLeftBumper).whileTrue(new TandemDrive(swerve, inputGetter::getJoystickVelocity));
 		new Trigger(inputGetter::getRightBumper).whileTrue(new IndependentDrive(swerve, () -> inputGetter.getLeftJoystick(), () -> inputGetter.getRightJoystick()));
 		new Trigger(inputGetter::getYButton).whileTrue(new DemoDrive(swerve, lift, wingPoseEstimator, inputGetter));
+		new Trigger(inputGetter::getBButton).whileTrue(lift.setLiftState(LiftPosition.pickup).andThen(new InstantCommand(() -> lift.stop(), lift)));
+		new Trigger(inputGetter::getXButton).whileTrue(lift.setLiftState(LiftPosition.place).andThen(new InstantCommand(() -> lift.stop(), lift)));
+
 		
 		// swerve.setDefaultCommand(new DemoDrive(swerve, wingPoseEstimator, inputGetter));
 
