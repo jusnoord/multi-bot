@@ -21,6 +21,7 @@ deploy {
             // want to store a team number in this file.
             team = project.frc.getTeamNumber()
             debug = project.frc.getDebugOrDefault(false)
+            setAddresses("10.93.12.2")
 
             artifacts {
                 // First part is artifact name, 2nd is artifact type
@@ -81,8 +82,11 @@ test {
 }
 
 // Simulation configuration (e.g. environment variables).
-wpi.sim.addGui().defaultEnabled = true
-wpi.sim.addDriverstation()
+wpi.sim.addGui().defaultEnabled = false
+// wpi.sim.addDriverstation()
+// idk someone told me to do it
+wpi.sim.addDriverstation().defaultEnabled = true
+
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib

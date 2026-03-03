@@ -1,7 +1,11 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Centimeters;
+import static edu.wpi.first.units.Units.Inches;
+
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -43,30 +47,52 @@ public class Lift extends SubsystemBase {
     public TalonFX makeMotor(int id, boolean inverted, boolean isBrake, double statorLimit, double ENCODER_TO_MECHANISM_RATIO, double ROTOR_TO_ENCODER_RATIO, double kP, double kI, double kD) {
         TalonFX motor = new TalonFX(id, "*");
 
-        //set neutral mode and inverts
-        config.MotorOutput.Inverted = inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-        config.MotorOutput.NeutralMode = isBrake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+        // //set neutral mode and inverts
+        // config.MotorOutput.Inverted = inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        // config.MotorOutput.NeutralMode = isBrake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
 
-        //set current limits; supply current limits are hardcoded because they are almost always the same
-        config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        config.CurrentLimits.SupplyCurrentLimit = 40d;
+        // //set current limits; supply current limits are hardcoded because they are almost always the same
+        // config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // config.CurrentLimits.SupplyCurrentLimit = 40d;
 
-        config.CurrentLimits.StatorCurrentLimitEnable = statorLimit > 0;
-        config.CurrentLimits.StatorCurrentLimit = statorLimit;
+        // config.CurrentLimits.StatorCurrentLimitEnable = statorLimit > 0;
+        // config.CurrentLimits.StatorCurrentLimit = statorLimit;
+
+        // //set feedback ratios
+        // config.Feedback.SensorToMechanismRatio = ENCODER_TO_MECHANISM_RATIO;
+        // config.Feedback.RotorToSensorRatio = ROTOR_TO_ENCODER_RATIO;
+
+
+
+
+
+        config.CurrentLimits.StatorCurrentLimitEnable = 10 > 0;
+        config.CurrentLimits.StatorCurrentLimit = 10;
 
         //set feedback ratios
-        config.Feedback.SensorToMechanismRatio = ENCODER_TO_MECHANISM_RATIO;
-        config.Feedback.RotorToSensorRatio = ROTOR_TO_ENCODER_RATIO;
+        config.Feedback.SensorToMechanismRatio = 50/(Inches.of(1.25).in(Centimeters) * Math.PI);
+        config.Feedback.RotorToSensorRatio = 0;
 
-        config.Slot0.kP = kP;
-        config.Slot0.kI = kI;
-        config.Slot0.kD = kD;
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+        config.Slot0.kP = 1;
+        config.Slot0.kI = 0d;
+        config.Slot0.kD = 0d;
 
         //TODO: might need other slots?
 
         motor.getConfigurator().apply(config);
 
         return motor;
+    }
+
+    public void setPower(double power) {
+        if(Constants.IS_MASTER) {
+            stop();
+        } else {
+            liftMotor.setControl(new DutyCycleOut(power));
+        }
     }
 
     public double getPosition() {
@@ -77,28 +103,33 @@ public class Lift extends SubsystemBase {
      * Gets the distance to the target from the CANrange in centimeters
      * @return zero when elevator is bottomed out
      */
-    double getCanRangeDistance() {
-        return canRange.getDistance().getValueAsDouble() / 100.0 - LiftConstants.canRangeOffset;
+    public double getCanRangeDistance() {
+        return (canRange.getDistance().getValueAsDouble() * 100.0) - LiftConstants.canRangeOffset;
     }
 
     /**
      * Sets the position of the lift in centimeters using the CANrange as feedback. Zero is when the elevator is bottomed out.
      * @param position in centimeters (ideally)
      */
-    void setPosition(double position) {
-        liftMotor.setControl(pid.withPosition(position));
+    public void setPosition(double position) {
+        if(Constants.IS_MASTER) {
+            stop();
+        } else {
+            liftMotor.setControl(pid.withPosition(position));
+        }
+        
         targetPosition = position;
     }
 
-    void setPosition(LiftPosition position) {
+    public void setPosition(LiftPosition position) {
         setPosition(position.height);
     }
 
-    boolean onTarget() {
-        return Math.abs(targetPosition - liftMotor.getPosition().getValueAsDouble()) < LiftConstants.positionTolerance;
+    public boolean onTarget() {
+        return Math.abs(targetPosition - getPosition()) < LiftConstants.positionTolerance;
     }
 
-    void resetEncoder() {
+    public void resetEncoder() {
         liftMotor.setPosition(getCanRangeDistance());
     }
 
@@ -109,7 +140,7 @@ public class Lift extends SubsystemBase {
     public Command setLiftState(LiftPosition position) {
         return new Command() {
             @Override
-            public void initialize() {
+            public void execute() {
                 setPosition(position);
             }
 
