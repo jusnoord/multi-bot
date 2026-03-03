@@ -200,9 +200,10 @@ public final class Constants {
 		{
 			{
 				// add(new Pose2d(2.5, 2.5, Rotation2d.fromDegrees(90))); // start
-				add(new Pose2d(2.5, 2, Rotation2d.fromDegrees(0))); // start
+				add(new Pose2d(3.5, 1.65, Rotation2d.fromDegrees(0))); // start
 
-				add(new Pose2d(1.5, 2, Rotation2d.fromDegrees(0))); // end
+				add(new Pose2d(2.5, 1.55, Rotation2d.fromDegrees(0))); // end
+				add(new Pose2d(1.33, 1.75, Rotation2d.fromDegrees(0)));
 			}
 		};
 	}
@@ -304,7 +305,7 @@ public final class Constants {
 	public final class DemoConstants {
 		public static final Pose2d wingApproximates[] = {new Pose2d(3.5, 1.24, Rotation2d.fromDegrees(90)), new Pose2d(3.5, 2.24, Rotation2d.fromDegrees(-90))};
 
-		public static final Pose2d stationPosition = new Pose2d(1.33, 2, Rotation2d.fromDegrees(0));
+		public static final Pose2d stationPosition = PathConstants.wayPoints.getLast();
 
 		public static final Transform2d[] wingRelativeFormationOffsets = {
 			new Transform2d(0,  -0.45, Rotation2d.fromDegrees(90)), 
