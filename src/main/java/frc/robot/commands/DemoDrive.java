@@ -57,7 +57,7 @@ public class DemoDrive extends SequentialCommandGroup {
         
         addCommands(
             new AutoDrive(swerve, () -> DemoConstants.wingApproximates[wingEstimateApproximateToUse.get()], true), // follow path to approximate wing position
-            Constants.IS_MASTER ? new InstantCommand(() -> chooseWingVisionApproximateToUse(swerve, wingPoseEstimator)).andThen(new WaitUntilCommand(isOtherRobotFinished::get)) : new WaitUntilCommand(isOtherRobotFinished::get).andThen(new InstantCommand(()->applyWingApproximate())),
+            new InstantCommand(() -> chooseWingVisionApproximateToUse(swerve, wingPoseEstimator)).andThen(new WaitUntilCommand(isOtherRobotFinished::get)),
             new AutoDrive(swerve, () -> wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[wingVisionApproximateToUse.get()]), false), // PID to exact wing position
             new WaitUntilCommand(isOtherRobotFinished::get), // wait for other robot to finish
             lift.setLiftState(LiftPosition.pickup), // lift up
@@ -71,19 +71,20 @@ public class DemoDrive extends SequentialCommandGroup {
     }
 
     public void chooseWingVisionApproximateToUse(Swerve swerve, WingPoseEstimator wingPoseEstimator) {
-        IntegerPublisher useMasterTagPublisher = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master tag post-vision").publish();
-            wingVisionApproximateToUse = () -> {
-            if(Math.abs(swerve.getPose().minus(wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[0])).getTranslation().getNorm()) < Math.abs(swerve.getPose().minus(wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[1])).getTranslation().getNorm())) {
-                useMasterTagPublisher.accept(1);
-                return 0;
-            } else {
-                useMasterTagPublisher.accept(0);
-                return 1;
-            }};
+        IntegerSubscriber useMasterTagSubscriber = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master tag post-vision").subscribe(-1);
+        if ((int)useMasterTagSubscriber.get() == -1) {
+            IntegerPublisher useMasterTagPublisher = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master tag post-vision").publish();
+                wingVisionApproximateToUse = () -> {
+                if(Math.abs(swerve.getPose().minus(wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[0])).getTranslation().getNorm()) < Math.abs(swerve.getPose().minus(wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[1])).getTranslation().getNorm())) {
+                    useMasterTagPublisher.accept(1);
+                    return 0;
+                } else {
+                    useMasterTagPublisher.accept(0);
+                    return 1;
+                }};
+        } else {
+            wingVisionApproximateToUse = () -> ((int)useMasterTagSubscriber.get());
+        }
     }
 
-    public void applyWingApproximate() {
-            IntegerSubscriber useMasterTagSubscriber = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master tag post-vision").subscribe(-1);
-            wingVisionApproximateToUse = () -> ((int)useMasterTagSubscriber.get());
-    }
 }
