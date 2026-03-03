@@ -62,9 +62,6 @@ public class Swerve extends SubsystemBase {
 
 	private final NERDPoseEstimator poseEstimator;
 	private final SwerveDriveKinematics drivetrainKinematics;
-	private final LinearFilter xUpdateFilter = LinearFilter.movingAverage(5);
-	private final LinearFilter yUpdateFilter = LinearFilter.movingAverage(5);
-	private final LinearFilter thetaUpdateFilter = LinearFilter.movingAverage(5);
 
 	public double targetAngle = 0;
 
@@ -269,21 +266,22 @@ public class Swerve extends SubsystemBase {
 		return pods;
 	}
 
-	private boolean calculateMovingAverage(Pose2d visionPose) {
-		final double maximumChangeTranslation = 0.05; // meters
-		final double maximumChangeRotation = Units.degreesToRadians(5); // take a guess
-
-		double x = visionPose.getX();
-		double y = visionPose.getY();
-		double theta = visionPose.getRotation().getRadians();
-
-		double xFilter = xUpdateFilter.calculate(visionPose.getX());
-		double yFilter = yUpdateFilter.calculate(visionPose.getY());
-		double thetaFilter = thetaUpdateFilter.calculate(visionPose.getRotation().getRadians());
-
-		return Math.abs(x - xFilter) < maximumChangeTranslation &&
-			   Math.abs(y - yFilter) < maximumChangeTranslation &&
-			   Math.abs(theta - thetaFilter) < maximumChangeRotation;
+	/**
+	 * Sanity-checks a vision pose before forwarding it to NERDPoseEstimator.
+	 *
+	 * <p>Only rejects obviously invalid poses (NaN/infinite coordinates). All
+	 * distance-based outlier rejection and adaptive acceptance-radius logic lives
+	 * inside {@link frc.robot.util.NERDPoseEstimator#addVisionMeasurement}, which
+	 * has the context needed to make that decision correctly (current estimate,
+	 * time since last accepted update, etc.).
+	 *
+	 * @param visionPose The vision-estimated robot pose to validate.
+	 * @return {@code true} if the pose contains only finite values.
+	 */
+	private boolean isVisionMeasurementReasonable(Pose2d visionPose) {
+		return Double.isFinite(visionPose.getX())
+				&& Double.isFinite(visionPose.getY())
+				&& Double.isFinite(visionPose.getRotation().getRadians());
 	}
 
 	/**
@@ -297,8 +295,7 @@ public class Swerve extends SubsystemBase {
 		VisionPosePublisher.set(visionPose);
 
 
-		if(!calculateMovingAverage(visionPose)) {
-			// don't add vision measurement if it's too far off from the moving average
+		if (!isVisionMeasurementReasonable(visionPose)) {
 			return;
 		}
 		
