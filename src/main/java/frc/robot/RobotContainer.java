@@ -81,8 +81,8 @@ public class RobotContainer {
 		// new Trigger(inputGetter::getBButton).onTrue(new AutoDrive(swerve, wingPoseEstimator::getEstimatedPose, false));
 		// new Trigger(inputGetter::getYButton).whileTrue(new DemoDrive(swerve, lift, wingPoseEstimator, inputGetter));
 		
-		// new Trigger(inputGetter::getLeftBumper).whileTrue(new TandemDrive(swerve, inputGetter::getJoystickVelocity));
-		// new Trigger(inputGetter::getRightBumper).whileTrue(new IndependentDrive(swerve, () -> inputGetter.getLeftJoystick(), () -> inputGetter.getRightJoystick()));
+		new Trigger(inputGetter::getLeftBumper).whileTrue(new TandemDrive(swerve, inputGetter::getJoystickVelocity));
+		new Trigger(inputGetter::getRightBumper).whileTrue(new IndependentDrive(swerve, () -> inputGetter.getLeftJoystick(), () -> inputGetter.getRightJoystick()));
 		
 		// new Trigger(inputGetter::getBButton).whileTrue(lift.setLiftState(LiftPosition.pickup)).onFalse(new InstantCommand(lift::stop, lift));
 		// new Trigger(inputGetter::getXButton).whileTrue(lift.setLiftState(LiftPosition.place)).onFalse(new InstantCommand(lift::stop, lift));
