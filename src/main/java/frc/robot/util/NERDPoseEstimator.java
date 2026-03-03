@@ -19,6 +19,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Timer;
+
 import java.util.NavigableMap;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -384,7 +386,7 @@ public class NERDPoseEstimator {
      */
     public synchronized Pose2d update(
             Rotation2d gyroAngle, SwerveModulePosition[] wheelPositions) {
-        return updateWithTime(MathSharedStore.getTimestamp(), gyroAngle, wheelPositions);
+        return updateWithTime(Timer.getFPGATimestamp(), gyroAngle, wheelPositions);
     }
 
     /**
@@ -476,7 +478,7 @@ public class NERDPoseEstimator {
         // ── Adaptive outlier rejection ─────────────────────────────────────────
         // The acceptance radius grows with time since the last accepted update so
         // that legitimate corrections after extended tag occlusion are still applied.
-        double now = MathSharedStore.getTimestamp();
+        double now = Timer.getFPGATimestamp();
         double timeSinceVision = Math.max(0.0, now - m_lastVisionTimestamp);
         double acceptanceRadius = Math.min(
                 kBaseAcceptanceRadius + kAcceptanceGrowthRate * timeSinceVision,

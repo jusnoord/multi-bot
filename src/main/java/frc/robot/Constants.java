@@ -193,7 +193,7 @@ public final class Constants {
 	}
 
 	public static final class PathConstants {
-		public static final double defaultSpeed = 0.1; // m/s
+		public static final double defaultSpeed = 0.05; // m/s
 		public static final double lookAhead = 0.04; // meters
 		public static final Rotation2d rotationalLookAhead = Rotation2d.fromDegrees(4); 
 		public static final List<Pose2d> wayPoints = new ArrayList<Pose2d>()
@@ -302,7 +302,7 @@ public final class Constants {
 	}
 
 	public final class DemoConstants {
-		public static final Pose2d wingApproximates[] = {new Pose2d(3.5, 1.24, Rotation2d.fromDegrees(90)), new Pose2d(3.5, 2.14, Rotation2d.fromDegrees(-90))};
+		public static final Pose2d wingApproximates[] = {new Pose2d(3.5, 1.24, Rotation2d.fromDegrees(90)), new Pose2d(3.5, 2.24, Rotation2d.fromDegrees(-90))};
 
 		public static final Pose2d stationPosition = new Pose2d(1.33, 2, Rotation2d.fromDegrees(0));
 

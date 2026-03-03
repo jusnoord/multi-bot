@@ -60,9 +60,9 @@ public class DemoDrive extends SequentialCommandGroup {
             new InstantCommand(() -> chooseWingVisionApproximateToUse(swerve, wingPoseEstimator)).andThen(new WaitUntilCommand(isOtherRobotFinished::get)),
             new AutoDrive(swerve, () -> wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[wingVisionApproximateToUse.get()]), false), // PID to exact wing position
             new WaitUntilCommand(isOtherRobotFinished::get), // wait for other robot to finish
-            lift.setLiftState(LiftPosition.pickup), // lift up
-            new WaitCommand(5), // someone puts the thing on the lift
-            lift.setLiftState(LiftPosition.place), // lift down
+            // lift.setLiftState(LiftPosition.pickup), // lift up
+            // new WaitCommand(3), // someone puts the thing on the lift
+            // lift.setLiftState(LiftPosition.place), // lift down
             new SyncOffsets(swerve).withTimeout(1), // sync offsets (unnecessary)
             // new InstantCommand(RobotConfig::resetOffsetPositions), // sets ofsets to original
             // new TandemDrive(swerve, inputGetter::getJoystickVelocity).until(inputGetter::getRightBumper), // tandem drive with other robot manually

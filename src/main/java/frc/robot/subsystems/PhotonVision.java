@@ -546,7 +546,8 @@ public class PhotonVision extends SubsystemBase {
                     for (PhotonPipelineResult result : results) {
                         // drivetrain.updateOdo();
 
-                        timestamp = result.getTimestampSeconds();
+                        // vision timestamps are based on NT epoch, which is determined by the master. subtract the time offset to place in slave-time
+                        timestamp = result.getTimestampSeconds() - (NetworkTableInstance.getDefault().getServerTimeOffset().getAsLong() / 10e6);
 
 
                         // first, do multitag as that should be done only once per result
