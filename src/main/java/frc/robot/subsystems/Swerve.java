@@ -296,7 +296,7 @@ public class Swerve extends SubsystemBase {
 
 
 		if (!isVisionMeasurementReasonable(visionPose)) {
-			return;
+			// return;
 		}
 		
 

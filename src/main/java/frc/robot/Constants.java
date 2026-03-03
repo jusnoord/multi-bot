@@ -295,20 +295,20 @@ public final class Constants {
 			put(8, new Transform2d(0, Units.feetToMeters(10), Rotation2d.fromDegrees(0)));
 									// x could be negated here idk but I have high confidence that the axes are not swapped and the y and angles are correct
 			//wing tags
-			put(1, new Transform2d(0, Units.inchesToMeters(16.75/2), Rotation2d.fromDegrees(0))); 
-			put(2, new Transform2d(0, -Units.inchesToMeters(16.75/2), Rotation2d.fromDegrees(0))); // (2.77, 0.99)
+			put(1, new Transform2d(0, -Units.inchesToMeters(16.75/2), Rotation2d.fromDegrees(0))); 
+			put(2, new Transform2d(0, Units.inchesToMeters(16.75/2), Rotation2d.fromDegrees(0))); // (2.77, 0.99)
 									// axes could be swapped here idk since its upside down
 		}};
 	}
 
 	public final class DemoConstants {
-		public static final Pose2d wingApproximates[] = {new Pose2d(2.7, 1, Rotation2d.fromDegrees(90)), new Pose2d(2.7, 2.562, Rotation2d.fromDegrees(-90))};
+		public static final Pose2d wingApproximates[] = {new Pose2d(3.5, 1.24, Rotation2d.fromDegrees(90)), new Pose2d(3.5, 2.14, Rotation2d.fromDegrees(-90))};
 
 		public static final Pose2d stationPosition = new Pose2d(1.33, 2, Rotation2d.fromDegrees(0));
 
 		public static final Transform2d[] wingRelativeFormationOffsets = {
-			new Transform2d(0,  Units.inchesToMeters(16.75/2), Rotation2d.fromDegrees(90)), 
-			new Transform2d(0,  + Units.inchesToMeters(16.75/2), Rotation2d.fromDegrees(-90))
+			new Transform2d(0,  -0.45, Rotation2d.fromDegrees(90)), 
+			new Transform2d(0,  0.45, Rotation2d.fromDegrees(-90))
 		};
 		
 	}
@@ -352,13 +352,13 @@ public final class Constants {
 
 		private static final double wheelBase = Units.inchesToMeters(19.75);
 		private static final double trackWidth = Units.inchesToMeters(19.75);
-		public static final Transform2d[] offsetPositions = {new Transform2d(new Translation2d(-0.781, 0.0), new Rotation2d()), new Transform2d(new Translation2d(0.781, 0.0), new Rotation2d(Math.PI))}; // default center of rotation of robot
+		public static final Transform2d[] offsetPositions = {new Transform2d(new Translation2d(-0.965, 0.0), new Rotation2d()), new Transform2d(new Translation2d(0.965, 0.0), new Rotation2d(Math.PI))}; // default center of rotation of robot
 		public static Command reset() {
 			return new InstantCommand(() -> resetOffsetPositions());
 		}
 		public static void resetOffsetPositions() {
-			offsetPositions[0] = new Transform2d(new Translation2d(-0.781, 0.0), new Rotation2d());
-			offsetPositions[1] = new Transform2d(new Translation2d(0.781, 0.0), new Rotation2d(Math.PI));
+			offsetPositions[0] = new Transform2d(new Translation2d(-0.965, 0.0), new Rotation2d());
+			offsetPositions[1] = new Transform2d(new Translation2d(0.965, 0.0), new Rotation2d(Math.PI));
 		}
 
 		/**

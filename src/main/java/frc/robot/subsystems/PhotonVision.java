@@ -771,8 +771,8 @@ public class PhotonVision extends SubsystemBase {
             //     }
             // }
 
-            final double distanceK = 0.03;
-            if(ambiguity <= 0.05) {
+            final double distanceK = 0.01;
+            if(ambiguity <= 0.15) {
                 return distanceK * distance.getTranslation().getNorm();
             } else if (ambiguity < 0.2) {
                 return distanceK * distance.getTranslation().getNorm() * 3; //3x the stddev at or before half ambiguity

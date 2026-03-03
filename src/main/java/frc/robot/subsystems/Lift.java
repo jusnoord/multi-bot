@@ -69,8 +69,8 @@ public class Lift extends SubsystemBase {
         config.MotorOutput.PeakReverseDutyCycle = -0.2;
 
 
-        config.CurrentLimits.StatorCurrentLimitEnable = 20 > 0;
-        config.CurrentLimits.StatorCurrentLimit = 20;
+        config.CurrentLimits.StatorCurrentLimitEnable = 30 > 0;
+        config.CurrentLimits.StatorCurrentLimit = 30;
 
         //set feedback ratios
         config.Feedback.SensorToMechanismRatio = 50/(Inches.of(1.25).in(Centimeters) * Math.PI);

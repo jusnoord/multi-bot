@@ -453,6 +453,8 @@ public class NERDPoseEstimator {
         if (m_odometryPoseBuffer.getInternalBuffer().isEmpty()
                 || m_odometryPoseBuffer.getInternalBuffer().lastKey() - kBufferDuration
                         > timestampSeconds) {
+            System.out.println("VISION RETURN: frame too old");
+
             return;
         }
 
@@ -460,11 +462,16 @@ public class NERDPoseEstimator {
 
         // ── Odometry pose at the moment the camera captured this frame ─────────
         var odometrySample = m_odometryPoseBuffer.getSample(timestampSeconds);
-        if (odometrySample.isEmpty()) return;
+        if (odometrySample.isEmpty()) {
+            System.out.println("VISION RETURN: odometry sample empty");
+            return;
+        }
 
         // ── Best fused estimate at that same moment ────────────────────────────
         var visionSample = sampleAt(timestampSeconds);
-        if (visionSample.isEmpty()) return;
+        if (visionSample.isEmpty()) {
+            System.out.println("VISION RETURN: vision sample empty");
+            return;}
 
         // ── Adaptive outlier rejection ─────────────────────────────────────────
         // The acceptance radius grows with time since the last accepted update so
@@ -478,7 +485,9 @@ public class NERDPoseEstimator {
         double distanceFromEstimate = m_poseEstimate.getTranslation()
                 .getDistance(visionRobotPoseMeters.getTranslation());
         if (distanceFromEstimate > acceptanceRadius) {
-            return; // Outlier — too far from the current estimate
+            System.out.println("VISION RETURN: outlier");
+
+            // return; // Outlier — too far from the current estimate
         }
 
         // ── Kalman-weighted correction twist ───────────────────────────────────
@@ -559,10 +568,16 @@ public class NERDPoseEstimator {
      * kept so that {@link #sampleAt} can interpolate correctly at the buffer edge.
      */
     private void cleanUpVisionUpdates() {
-        if (m_odometryPoseBuffer.getInternalBuffer().isEmpty()) return;
+        if (m_odometryPoseBuffer.getInternalBuffer().isEmpty()) {
+            // System.out.println("VISION RETURN: odometry return empty");
+            return;
+        }
 
         double oldestOdoTs = m_odometryPoseBuffer.getInternalBuffer().firstKey();
-        if (m_visionUpdates.isEmpty() || oldestOdoTs < m_visionUpdates.firstKey()) return;
+        if (m_visionUpdates.isEmpty() || oldestOdoTs < m_visionUpdates.firstKey()) {
+            // System.out.println("VISION RETURN: odometry return empty");
+            return;
+        }
 
         double newestNeeded = m_visionUpdates.floorKey(oldestOdoTs);
         m_visionUpdates.headMap(newestNeeded, false).clear();

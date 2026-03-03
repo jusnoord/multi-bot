@@ -31,6 +31,8 @@ public class WingPoseEstimator {
     private double lastAngle = 0;
     private double lastTime = Timer.getFPGATimestamp();
 
+    private double lastWingUpdateTimestamp = Timer.getFPGATimestamp();
+
      
     public WingPoseEstimator() {
         Nat<N3> matrixSize = Nat.N3();
@@ -83,6 +85,8 @@ public class WingPoseEstimator {
     }
 
     public void addVisionMeasurement(Pose2d input, Matrix<N3, N1> measurementStdDevs) {
+        lastWingUpdateTimestamp = Timer.getFPGATimestamp();
+
         double x = input.getX();
         double y = input.getY();
         double wrappedTheta = input.getRotation().getRadians();
@@ -133,6 +137,11 @@ public class WingPoseEstimator {
 
         // if(estimatedPose.equals(Pose2d.kZero)) {
         //     throw new RuntimeException("WingPoseEstimator: estimated pose is zero!");
+        // }
+
+        //if no wing update in a second, simply return the average of the wing approximates (todo bad code lmao)
+        // if(Timer.getFPGATimestamp() - lastWingUpdateTimestamp > 1) {
+        //     return DemoConstants.wingApproximates[0].interpolate(DemoConstants.wingApproximates[1], 0.5);
         // }
         
         return estimatedPose;

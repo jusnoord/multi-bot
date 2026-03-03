@@ -79,7 +79,7 @@ public class RobotContainer {
 		// Pose2d wingApproximate = Constants.IS_MASTER ? DemoConstants.masterWingApproximate : DemoConstants.slaveWingApproximate;
 		// new Trigger(inputGetter::getAButton).onTrue(new AutoDrive(swerve, () -> wingApproximate, true));
 		// new Trigger(inputGetter::getBButton).onTrue(new AutoDrive(swerve, wingPoseEstimator::getEstimatedPose, false));
-		// new Trigger(inputGetter::getYButton).whileTrue(new DemoDrive(swerve, lift, wingPoseEstimator, inputGetter));
+		new Trigger(inputGetter::getYButton).whileTrue(new DemoDrive(swerve, lift, wingPoseEstimator, inputGetter));
 		
 		new Trigger(inputGetter::getLeftBumper).whileTrue(new TandemDrive(swerve, inputGetter::getJoystickVelocity));
 		new Trigger(inputGetter::getRightBumper).whileTrue(new IndependentDrive(swerve, () -> inputGetter.getLeftJoystick(), () -> inputGetter.getRightJoystick()));
@@ -89,9 +89,11 @@ public class RobotContainer {
 		new Trigger(inputGetter::getBButton).whileTrue(new InstantCommand(() -> lift.setPosition(15), lift)).onFalse(new InstantCommand(lift::stop, lift));
 		new Trigger(inputGetter::getXButton).whileTrue(new InstantCommand(() -> lift.setPosition(6), lift)).onFalse(new InstantCommand(lift::stop, lift));
 		
-		new Trigger(inputGetter::getAButton).whileTrue(new RunCommand(() -> lift.setPower(-0.1), lift)).onFalse(new InstantCommand(lift::stop, lift));
-		new Trigger(inputGetter::getYButton).whileTrue(new RunCommand(() -> lift.setPower(0.1), lift)).onFalse(new InstantCommand(lift::stop, lift));
+		// new Trigger(inputGetter::getAButton).whileTrue(new RunCommand(() -> lift.setPower(-0.1), lift)).onFalse(new InstantCommand(lift::stop, lift));
+		// new Trigger(inputGetter::getYButton).whileTrue(new RunCommand(() -> lift.setPower(0.1), lift)).onFalse(new InstantCommand(lift::stop, lift));
 		
+		new Trigger(inputGetter::getStartButton).whileTrue(new InstantCommand(lift::resetEncoder, lift));
+
 		// swerve.setDefaultCommand(new DemoDrive(swerve, wingPoseEstimator, inputGetter));
 
 

@@ -56,8 +56,8 @@ public class DemoDrive extends SequentialCommandGroup {
             lift.setLiftState(LiftPosition.pickup), // lift up
             new WaitCommand(5), // someone puts the thing on the lift
             lift.setLiftState(LiftPosition.place), // lift down
-            // new SyncOffsets(swerve).withTimeout(1), // sync offsets (unnecessary)
-            new InstantCommand(RobotConfig::resetOffsetPositions), // sets ofsets to original
+            new SyncOffsets(swerve).withTimeout(1), // sync offsets (unnecessary)
+            // new InstantCommand(RobotConfig::resetOffsetPositions), // sets ofsets to original
             // new TandemDrive(swerve, inputGetter::getJoystickVelocity).until(inputGetter::getRightBumper), // tandem drive with other robot manually
             new FollowPath(swerve, new Path(PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead), DemoConstants.stationPosition) // follow path to station
 
