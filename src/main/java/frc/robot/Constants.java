@@ -295,8 +295,8 @@ public final class Constants {
 			put(8, new Transform2d(0, Units.feetToMeters(10), Rotation2d.fromDegrees(0)));
 									// x could be negated here idk but I have high confidence that the axes are not swapped and the y and angles are correct
 			//wing tags
-			put(1, new Transform2d(0, 0.781, Rotation2d.fromDegrees(0))); 
-			put(2, new Transform2d(0, -0.781, Rotation2d.fromDegrees(0))); // (2.77, 0.99)
+			put(1, new Transform2d(0, Units.inchesToMeters(16.75/2), Rotation2d.fromDegrees(0))); 
+			put(2, new Transform2d(0, -Units.inchesToMeters(16.75/2), Rotation2d.fromDegrees(0))); // (2.77, 0.99)
 									// axes could be swapped here idk since its upside down
 		}};
 	}
@@ -307,8 +307,8 @@ public final class Constants {
 		public static final Pose2d stationPosition = new Pose2d(1.33, 2, Rotation2d.fromDegrees(0));
 
 		public static final Transform2d[] wingRelativeFormationOffsets = {
-			new Transform2d(0, -0.781, Rotation2d.fromDegrees(90)), 
-			new Transform2d(0, 0.781, Rotation2d.fromDegrees(-90))
+			new Transform2d(0,  Units.inchesToMeters(16.75/2), Rotation2d.fromDegrees(90)), 
+			new Transform2d(0,  + Units.inchesToMeters(16.75/2), Rotation2d.fromDegrees(-90))
 		};
 		
 	}
