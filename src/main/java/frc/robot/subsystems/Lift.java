@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Inches;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -27,7 +28,7 @@ public class Lift extends SubsystemBase {
     private TalonFX liftMotor;
     private CANrange canRange;
     private TalonFXConfiguration config = new TalonFXConfiguration();
-    private PositionVoltage pid;
+    private PositionDutyCycle pid;
     private double targetPosition = 0;
 
     private DoublePublisher liftPose;
@@ -41,7 +42,7 @@ public class Lift extends SubsystemBase {
         canRangePub = NetworkTableInstance.getDefault().getTable("Lift").getSubTable(Constants.currentRobot.toString()).getDoubleTopic("CanRange").publish();
 
         resetEncoder();
-        pid = new PositionVoltage(getPosition());
+        pid = new PositionDutyCycle(getPosition());
     }
 
     public TalonFX makeMotor(int id, boolean inverted, boolean isBrake, double statorLimit, double ENCODER_TO_MECHANISM_RATIO, double ROTOR_TO_ENCODER_RATIO, double kP, double kI, double kD) {
@@ -64,19 +65,21 @@ public class Lift extends SubsystemBase {
 
 
 
+        config.MotorOutput.PeakForwardDutyCycle = 0.2;
+        config.MotorOutput.PeakReverseDutyCycle = -0.2;
 
 
-        config.CurrentLimits.StatorCurrentLimitEnable = 10 > 0;
-        config.CurrentLimits.StatorCurrentLimit = 10;
+        config.CurrentLimits.StatorCurrentLimitEnable = 20 > 0;
+        config.CurrentLimits.StatorCurrentLimit = 20;
 
         //set feedback ratios
         config.Feedback.SensorToMechanismRatio = 50/(Inches.of(1.25).in(Centimeters) * Math.PI);
         config.Feedback.RotorToSensorRatio = 0;
 
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = Constants.IS_MASTER ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        config.Slot0.kP = 1;
+        config.Slot0.kP = 1d/12d;
         config.Slot0.kI = 0d;
         config.Slot0.kD = 0d;
 
@@ -88,11 +91,7 @@ public class Lift extends SubsystemBase {
     }
 
     public void setPower(double power) {
-        if(Constants.IS_MASTER) {
-            stop();
-        } else {
-            liftMotor.setControl(new DutyCycleOut(power));
-        }
+        liftMotor.setControl(new DutyCycleOut(power));
     }
 
     public double getPosition() {
@@ -112,12 +111,7 @@ public class Lift extends SubsystemBase {
      * @param position in centimeters (ideally)
      */
     public void setPosition(double position) {
-        if(Constants.IS_MASTER) {
-            stop();
-        } else {
-            liftMotor.setControl(pid.withPosition(position));
-        }
-        
+        liftMotor.setControl(pid.withPosition(position));
         targetPosition = position;
     }
 

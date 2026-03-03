@@ -87,7 +87,7 @@ public class RobotContainer {
 		// new Trigger(inputGetter::getBButton).whileTrue(lift.setLiftState(LiftPosition.pickup)).onFalse(new InstantCommand(lift::stop, lift));
 		// new Trigger(inputGetter::getXButton).whileTrue(lift.setLiftState(LiftPosition.place)).onFalse(new InstantCommand(lift::stop, lift));
 		new Trigger(inputGetter::getBButton).whileTrue(new InstantCommand(() -> lift.setPosition(15), lift)).onFalse(new InstantCommand(lift::stop, lift));
-		new Trigger(inputGetter::getBButton).whileTrue(new InstantCommand(() -> lift.setPosition(6), lift)).onFalse(new InstantCommand(lift::stop, lift));
+		new Trigger(inputGetter::getXButton).whileTrue(new InstantCommand(() -> lift.setPosition(6), lift)).onFalse(new InstantCommand(lift::stop, lift));
 		
 		new Trigger(inputGetter::getAButton).whileTrue(new RunCommand(() -> lift.setPower(-0.1), lift)).onFalse(new InstantCommand(lift::stop, lift));
 		new Trigger(inputGetter::getYButton).whileTrue(new RunCommand(() -> lift.setPower(0.1), lift)).onFalse(new InstantCommand(lift::stop, lift));
