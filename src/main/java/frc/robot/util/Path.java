@@ -6,6 +6,7 @@ package frc.robot.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,25 +20,31 @@ public class Path {
     private final double defaultSpeed;
     private int currentWaypointIndex = 0;
     private final double rotationalSpeedCap = 10; // degrees per second
+    private final double rotationalDistanceWeight = 0.3; // meters per radian, used to blend rotational error into waypoint distance
     private boolean isPathComplete = false;
 
-    public Path(List<Pose2d> waypoints, double defaultSpeed, double lookAhead, Rotation2d rotationalLookAhead) {
+    public Path(Supplier<Pose2d> start, List<Pose2d> waypoints, double defaultSpeed, double lookAhead, Rotation2d rotationalLookAhead) {
         this.defaultSpeed = defaultSpeed;
         this.lookAhead = lookAhead;
         this.rotationalLookAhead = rotationalLookAhead;
+        waypoints.addFirst(start.get());
         this.waypoints = interpolate(waypoints);
     }
 
     public List<Pose2d> interpolate(List<Pose2d> waypoints) {
         List<Pose2d> res = new ArrayList<>();
         double desiredDistance = lookAhead / 4;
+        double desiredAngleStep = rotationalLookAhead.getRadians() / 4;
         for (int i = 0; i < waypoints.size() - 1; i++) {
             Pose2d start = waypoints.get(i);
             Pose2d end = waypoints.get(i + 1);
             double distance = start.getTranslation().getDistance(end.getTranslation());
-            int numInterpolations = (int)(distance / desiredDistance);
+            double angularDist = Math.abs(end.getRotation().minus(start.getRotation()).getRadians());
+            int posInterpolations = (int)(distance / desiredDistance);
+            int rotInterpolations = desiredAngleStep > 0 ? (int)(angularDist / desiredAngleStep) : 0;
+            int numInterpolations = Math.max(posInterpolations, rotInterpolations);
             for (int j = 0; j < numInterpolations; j++) {
-                double t = ((double)j) / (numInterpolations);
+                double t = ((double)j) / numInterpolations;
                 Pose2d interpolated = start.interpolate(end, t);
                 res.add(interpolated);
             }
@@ -55,10 +62,12 @@ public class Path {
         int closestWaypointIndex = 0;
         int secondClosestWaypointIndex = 0;
         
-        // find two closest waypoints
+        // find two closest waypoints, blending translational and rotational distance
         for (int i = 0; i < waypoints.size(); i++) {
             Pose2d waypoint = waypoints.get(i);
-            double distance = currentPose.getTranslation().getDistance(waypoint.getTranslation());
+            double translationalDist = currentPose.getTranslation().getDistance(waypoint.getTranslation());
+            double rotationalDist = Math.abs(currentPose.getRotation().minus(waypoint.getRotation()).getRadians()) * rotationalDistanceWeight;
+            double distance = translationalDist + rotationalDist;
             if (distance < closestDistance) {
                 closestDistance = distance;
                 secondClosestWaypointIndex = closestWaypointIndex;
