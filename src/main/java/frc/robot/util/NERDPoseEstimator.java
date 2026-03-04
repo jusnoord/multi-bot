@@ -511,7 +511,7 @@ public class NERDPoseEstimator {
         //     dx *= scale;
         //     dy *= scale;
         // }
-        dtheta = MathUtil.clamp(dtheta, -kMaxCorrectionRadians, kMaxCorrectionRadians);
+        // dtheta = MathUtil.clamp(dtheta, -kMaxCorrectionRadians, kMaxCorrectionRadians);
 
         var scaledTwist = new Twist2d(dx, dy, dtheta);
 
@@ -581,8 +581,11 @@ public class NERDPoseEstimator {
             return;
         }
 
+        
         double newestNeeded = m_visionUpdates.floorKey(oldestOdoTs);
-        m_visionUpdates.headMap(newestNeeded, false).clear();
+        var updatesToPrune = m_visionUpdates.headMap(newestNeeded, false);
+        updatesToPrune.clear();
+        System.out.println(m_visionUpdates.size() + " updates left from " + (Timer.getFPGATimestamp()-newestNeeded) + "seconds ago");
     }
 
     // ══════════════════════════════════════════════════════════════════════════

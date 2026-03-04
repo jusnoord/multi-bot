@@ -93,7 +93,7 @@ public class RobotContainer {
 		// new Trigger(inputGetter::getYButton).whileTrue(new RunCommand(() -> lift.setPower(0.1), lift)).onFalse(new InstantCommand(lift::stop, lift));
 		
 		new Trigger(inputGetter::getStartButton).whileTrue(new InstantCommand(lift::resetEncoder, lift));
-		new Trigger(inputGetter::getAButton).whileTrue(new FollowPath(swerve, new Path(() -> swerve.getPose(), PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead), PathConstants.wayPoints.get(PathConstants.wayPoints.size()-1)));
+		// new Trigger(inputGetter::getAButton).whileTrue(new FollowPath(swerve, new Path(() -> swerve.getPose(), PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead), PathConstants.wayPoints.get(PathConstants.wayPoints.size()-1)));
 		// swerve.setDefaultCommand(new DemoDrive(swerve, wingPoseEstimator, inputGetter));
 
 

@@ -230,8 +230,8 @@ public final class Constants {
 		public static final double tandemPositionTolerance = 0.06; // meters
 
 		//autodrive gains
-		public static final double autoDrivekP = 0.7;
-		public static final double autoDrivekI = 0.05;
+		public static final double autoDrivekP = 0.5;
+		public static final double autoDrivekI = 0.08;
 		public static final double autoDrivekD = 0.05;
 
 		public static final double autoDrivekP_angle = 0.7;

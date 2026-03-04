@@ -300,7 +300,7 @@ public class Swerve extends SubsystemBase {
 		}
 		
 
-		if(DriverStation.isDisabled() && stdDev < 9) {
+		if(DriverStation.isDisabled()) {
 			// fully sync pose estimator to vision on disable as long as the vision update isnt poop
 			poseEstimator.addVisionMeasurement(visionPose,
 					timestamp,
