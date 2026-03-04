@@ -76,7 +76,7 @@ public class DriveToWing extends Command {
         this.wingRelativeFormationOffsets = wingRelativeFormationOffsets;
         this.otherWingPoseSubscriber = otherWingPoseSubscriber;
         // masterPoseSubscriber = NetworkTableInstance.getDefault().getTable(Constants.RobotType.master.toString()).getStructTopic("RobotPose", Pose2d.struct).subscribe(new Pose2d());
-        robotSpeedPublisher = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.toString()).getStructTopic("desired tandem speed", Pose2d.struct).publish();
+        // robotSpeedPublisher = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.toString()).getStructTopic("desired tandem speed", Pose2d.struct).publish();
         atTargetPublisher = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.toString()).getBooleanTopic("autodrive at target").publish();
         whichOffsetToUsePublisher = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.toString()).getIntegerTopic("whichOffsetToUse").publish();
         whichOffsetToUseSubscriber = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.getOpposite().toString()).getIntegerTopic("whichOffsetToUse").subscribe(-1);
@@ -138,7 +138,7 @@ public class DriveToWing extends Command {
                 robotTargetPose = wingPose1;
                 whichOffsetToUsePublisher.accept(0);
             }
-        } else if (Math.abs(otherWingPoseSubscriber.getLastChange() - lastOtherWingPoseUpdate) < 1 && whichOffsetToUseSubscriber.get() != -1) {
+        } else if (Math.abs(otherWingPoseSubscriber.getLastChange() - lastOtherWingPoseUpdate) < (1e6) && whichOffsetToUseSubscriber.get() != -1) {
             robotTargetPose = otherWingPoseSubscriber.get().transformBy(wingRelativeFormationOffsets[(int)whichOffsetToUseSubscriber.get()]);
         }
         lastOtherWingPoseUpdate = otherWingPoseSubscriber.getLastChange();
@@ -178,6 +178,6 @@ public class DriveToWing extends Command {
 
     @Override
     public boolean isFinished() {
-        return PIDAtTolerance;
+        return false;
     }
 }

@@ -303,13 +303,13 @@ public final class Constants {
 	}
 
 	public final class DemoConstants {
-		public static final Pose2d estimatedWingPosition = new Pose2d(3.45, 1.61, new Rotation2d());
+		public static final Pose2d estimatedWingPosition = new Pose2d(3.45, 1.71, new Rotation2d());
 		
 		// public static final Pose2d stationPosition = PathConstants.wayPoints.getLast();
 		
 		public static final Transform2d[] wingRelativeFormationOffsets = {
-			new Transform2d(0,  -0.45, Rotation2d.fromDegrees(90)), 
-			new Transform2d(0,  0.45, Rotation2d.fromDegrees(-90))
+			new Transform2d(0,  -0.5, Rotation2d.fromDegrees(90)), 
+			new Transform2d(0,  0.5, Rotation2d.fromDegrees(-90))
 		};
 		public static final Pose2d wingApproximates[] = {estimatedWingPosition.transformBy(wingRelativeFormationOffsets[0]),estimatedWingPosition.transformBy(wingRelativeFormationOffsets[1])};
 		

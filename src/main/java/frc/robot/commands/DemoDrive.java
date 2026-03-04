@@ -60,12 +60,12 @@ public class DemoDrive extends SequentialCommandGroup {
         
         addCommands(
             new InstantCommand(() -> resetPublishers()),
-            new DriveToWing(swerve, otherRobotPoseSub, otherRobotWingPoseSub, wingPoseEstimator, DemoConstants.estimatedWingPosition, DemoConstants.wingRelativeFormationOffsets),
-            // new AutoDrive(swerve, () -> DemoConstants.wingApproximates[wingEstimateApproximateToUse.get()], true), // follow path to approximate wing position
-            // new InstantCommand(() -> chooseWingVisionApproximateToUse(swerve, wingPoseEstimator)),
-            // new WaitUntilCommand(isOtherRobotFinished::get),
-            // new WaitCommand(0.5),
-            // new AutoDrive(swerve, () -> wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[wingVisionApproximateToUse.get()]), false), // PID to exact wing position
+            // new DriveToWing(swerve, otherRobotPoseSub, otherRobotWingPoseSub, wingPoseEstimator, DemoConstants.estimatedWingPosition, DemoConstants.wingRelativeFormationOffsets),
+            new AutoDrive(swerve, () -> DemoConstants.wingApproximates[wingEstimateApproximateToUse.get()], true), // follow path to approximate wing position
+            new InstantCommand(() -> chooseWingVisionApproximateToUse(swerve, wingPoseEstimator)),
+            new WaitUntilCommand(isOtherRobotFinished::get),
+            new WaitCommand(0.5),
+            new AutoDrive(swerve, () -> wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[wingVisionApproximateToUse.get()]), false), // PID to exact wing position
             new WaitUntilCommand(isOtherRobotFinished::get), // wait for other robot to finish
             // new WaitCommand(0.2),
             lift.setLiftState(LiftPosition.pickup).withTimeout(3), // lift up
