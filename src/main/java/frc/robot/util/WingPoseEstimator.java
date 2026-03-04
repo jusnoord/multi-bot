@@ -143,10 +143,15 @@ public class WingPoseEstimator {
 
         //if no wing update in a second, simply return the average of the wing approximates (todo bad code lmao)
         if(Timer.getFPGATimestamp() - lastWingUpdateTimestamp > 1) {
-            return DemoConstants.wingApproximates[0].interpolate(DemoConstants.wingApproximates[1], 0.5);
+            return DemoConstants.estimatedWingPosition.transformBy(DemoConstants.wingRelativeFormationOffsets[0]).interpolate(DemoConstants.estimatedWingPosition.transformBy(DemoConstants.wingRelativeFormationOffsets[1]), 0.5);
         }
 
         
         return estimatedPose;
     }
+
+    public boolean hasSeenWingRecently() {
+        return Timer.getFPGATimestamp() - lastWingUpdateTimestamp < 1;
+    }
+
 }

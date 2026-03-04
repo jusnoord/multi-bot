@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.networktables.StructSubscriber;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -33,6 +34,8 @@ public class DemoDrive extends SequentialCommandGroup {
 
     Supplier<Integer> wingEstimateApproximateToUse;
     Supplier<Integer> wingVisionApproximateToUse;
+    StructSubscriber<Pose2d> otherRobotPoseSub = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.getOpposite().toString()).getStructTopic("RobotPose", Pose2d.struct).subscribe(new Pose2d());
+    StructSubscriber<Pose2d> otherRobotWingPoseSub = NetworkTableInstance.getDefault().getTable("WingPoseEstimator").getStructTopic(Constants.currentRobot.getOpposite().toString() + " pose estimate", Pose2d.struct).subscribe(new Pose2d());
 
     /** Creates a new DemoDrive. */
     public DemoDrive(Swerve swerve, Lift lift, WingPoseEstimator wingPoseEstimator, InputGetter inputGetter) {
@@ -57,11 +60,12 @@ public class DemoDrive extends SequentialCommandGroup {
         
         addCommands(
             new InstantCommand(() -> resetPublishers()),
-            new AutoDrive(swerve, () -> DemoConstants.wingApproximates[wingEstimateApproximateToUse.get()], true), // follow path to approximate wing position
-            new InstantCommand(() -> chooseWingVisionApproximateToUse(swerve, wingPoseEstimator)),
-            new WaitUntilCommand(isOtherRobotFinished::get),
-            new WaitCommand(0.5),
-            new AutoDrive(swerve, () -> wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[wingVisionApproximateToUse.get()]), false), // PID to exact wing position
+            new DriveToWing(swerve, otherRobotPoseSub, otherRobotWingPoseSub, wingPoseEstimator, DemoConstants.estimatedWingPosition, DemoConstants.wingRelativeFormationOffsets),
+            // new AutoDrive(swerve, () -> DemoConstants.wingApproximates[wingEstimateApproximateToUse.get()], true), // follow path to approximate wing position
+            // new InstantCommand(() -> chooseWingVisionApproximateToUse(swerve, wingPoseEstimator)),
+            // new WaitUntilCommand(isOtherRobotFinished::get),
+            // new WaitCommand(0.5),
+            // new AutoDrive(swerve, () -> wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[wingVisionApproximateToUse.get()]), false), // PID to exact wing position
             new WaitUntilCommand(isOtherRobotFinished::get), // wait for other robot to finish
             // new WaitCommand(0.2),
             lift.setLiftState(LiftPosition.pickup).withTimeout(3), // lift up
