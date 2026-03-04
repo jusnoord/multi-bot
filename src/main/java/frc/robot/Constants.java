@@ -194,8 +194,8 @@ public final class Constants {
 
 	public static final class PathConstants {
 		public static final double defaultSpeed = 0.1; // m/s
-		public static final double lookAhead = 0.04; // meters
-		public static final Rotation2d rotationalLookAhead = Rotation2d.fromDegrees(15); 
+		public static final double lookAhead = 0.08; // meters
+		public static final Rotation2d rotationalLookAhead = Rotation2d.fromDegrees(25); 
 		public static final List<Pose2d> wayPoints = new ArrayList<Pose2d>()
 		{
 			{

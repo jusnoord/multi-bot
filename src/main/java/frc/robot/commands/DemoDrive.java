@@ -56,18 +56,25 @@ public class DemoDrive extends SequentialCommandGroup {
 
         
         addCommands(
+            new InstantCommand(() -> resetPublishers()),
             new AutoDrive(swerve, () -> DemoConstants.wingApproximates[wingEstimateApproximateToUse.get()], true), // follow path to approximate wing position
-            new InstantCommand(() -> chooseWingVisionApproximateToUse(swerve, wingPoseEstimator)).andThen(new WaitUntilCommand(isOtherRobotFinished::get)),
-            new WaitCommand(1),
+            new InstantCommand(() -> chooseWingVisionApproximateToUse(swerve, wingPoseEstimator)),
+            new WaitUntilCommand(isOtherRobotFinished::get),
+            new WaitCommand(0.5),
             new AutoDrive(swerve, () -> wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[wingVisionApproximateToUse.get()]), false), // PID to exact wing position
             new WaitUntilCommand(isOtherRobotFinished::get), // wait for other robot to finish
-            new WaitCommand(2),
+            // new WaitCommand(0.2),
             lift.setLiftState(LiftPosition.pickup).withTimeout(3), // lift up
             new SyncOffsets(swerve).withTimeout(1), // sync offsets (unnecessary)
             // new InstantCommand(RobotConfig::resetOffsetPositions), // sets ofsets to original
             // new TandemDrive(swerve, inputGetter::getJoystickVelocity).until(inputGetter::getRightBumper), // tandem drive with other robot manually
             new FollowPath(swerve, new Path(() -> swerve.getPose(), PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead), PathConstants.wayPoints.get(PathConstants.wayPoints.size()-1)) // follow path to station
         );
+    }
+
+    public void resetPublishers() {
+        IntegerPublisher useMasterTagPublisher = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master tag post-vision").publish();
+        useMasterTagPublisher.accept(-1);
     }
 
     public void chooseWingVisionApproximateToUse(Swerve swerve, WingPoseEstimator wingPoseEstimator) {
