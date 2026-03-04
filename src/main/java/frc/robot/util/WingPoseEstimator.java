@@ -141,7 +141,6 @@ public class WingPoseEstimator {
         //     throw new RuntimeException("WingPoseEstimator: estimated pose is zero!");
         // }
 
-        System.out.println(Timer.getFPGATimestamp() - lastWingUpdateTimestamp);
         //if no wing update in a second, simply return the average of the wing approximates (todo bad code lmao)
         if(Timer.getFPGATimestamp() - lastWingUpdateTimestamp > 1) {
             return DemoConstants.wingApproximates[0].interpolate(DemoConstants.wingApproximates[1], 0.5);

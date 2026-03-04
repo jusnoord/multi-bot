@@ -230,8 +230,8 @@ public final class Constants {
 		public static final double tandemPositionTolerance = 0.06; // meters
 
 		//autodrive gains
-		public static final double autoDrivekP = 0.5;
-		public static final double autoDrivekI = 0.0;
+		public static final double autoDrivekP = 0.7;
+		public static final double autoDrivekI = 0.05;
 		public static final double autoDrivekD = 0.05;
 
 		public static final double autoDrivekP_angle = 0.7;
@@ -241,7 +241,7 @@ public final class Constants {
 		public static final double highAutoDriveAngleTolerance = 0.2; // radians
 		public static final double highAutoDrivePositionTolerance = 0.4; // meters
 		public static final double lowAutoDriveAngleTolerance = 0.02; // radians
-		public static final double lowAutoDrivePositionTolerance = 0.03; // meters
+		public static final double lowAutoDrivePositionTolerance = 0.01; // meters
 
 		public static final double tandemTranslation_deadband = 0.008;
 		public static final double tandemAngle_deadband = 0.005;
@@ -303,7 +303,7 @@ public final class Constants {
 	}
 
 	public final class DemoConstants {
-		public static final Pose2d wingApproximates[] = {new Pose2d(3.45, 1.24, Rotation2d.fromDegrees(90)), new Pose2d(3.45, 2.14, Rotation2d.fromDegrees(-90))};
+		public static final Pose2d wingApproximates[] = {new Pose2d(3.45, 1.16, Rotation2d.fromDegrees(90)), new Pose2d(3.45, 2.06, Rotation2d.fromDegrees(-90))};
 
 		// public static final Pose2d stationPosition = PathConstants.wayPoints.getLast();
 

@@ -313,6 +313,11 @@ public class Swerve extends SubsystemBase {
 					VecBuilder.fill(stdDev, stdDev, stdDev));
 		}
 
+
+		// if(stdDev < 9) {
+		// 	System.out.println("vision reject; high stddev");
+		// } 
+
 	}
 
 	
