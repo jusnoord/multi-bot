@@ -20,6 +20,7 @@ In terms of NetworkTables, a server is run on the master computer and clients ar
 
 Errata:
 - if NT devices on the slave start disconnecting, re-deploy/restart code
+- if the slave PC is unreachable but other slave devices are, restart the robot
 - radio boot-up is even longer in this custom firmware than it is on FRC bots.
 
 ### Section 2: Hardware
@@ -34,3 +35,6 @@ To actually run code on the robot, you must run the deploy script. It uses rsync
 
 Common hardware issues:
 - if azimuths randomly decide to oscillate, restart robot
+
+### Section 3: Pose Estimation
+Regarding vision data, the robots have two modes: in tandem and not. When robots are not in tandem (i.e. when they haven't seen each other in the last second), all 

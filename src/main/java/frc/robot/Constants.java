@@ -193,17 +193,17 @@ public final class Constants {
 	}
 
 	public static final class PathConstants {
-		public static final double defaultSpeed = 0.05; // m/s
+		public static final double defaultSpeed = 0.1; // m/s
 		public static final double lookAhead = 0.04; // meters
-		public static final Rotation2d rotationalLookAhead = Rotation2d.fromDegrees(4); 
+		public static final Rotation2d rotationalLookAhead = Rotation2d.fromDegrees(15); 
 		public static final List<Pose2d> wayPoints = new ArrayList<Pose2d>()
 		{
 			{
 				// add(new Pose2d(2.5, 2.5, Rotation2d.fromDegrees(90))); // start
-				add(new Pose2d(3.5, 1.75, Rotation2d.fromDegrees(90))); // start
+				add(new Pose2d(3.0, 1.85, Rotation2d.fromDegrees(0))); // start
 
-				add(new Pose2d(2.5, 1.75, Rotation2d.fromDegrees(90))); // end
-				add(new Pose2d(1.33, 1.75, Rotation2d.fromDegrees(90)));
+				add(new Pose2d(2.3, 1.45, Rotation2d.fromDegrees(90))); // end
+				add(new Pose2d(1.33, 1.85, Rotation2d.fromDegrees(0)));
 			}
 		};
 	}
@@ -222,7 +222,7 @@ public final class Constants {
 		public static final double tandemkI = 0.0;
 		public static final double tandemkD = 0.0;
 
-		public static final double tandemkP_angle = 0.7;
+		public static final double tandemkP_angle = 1.4;
 		public static final double tandemkI_angle = 0.0;
 		public static final double tandemkD_angle = 0.0;
 
@@ -423,7 +423,7 @@ public final class Constants {
         // Drive Settings
         public static final double podMaxSpeed = 1;
 
-        public static final boolean driveBrake = false;
+        public static final boolean driveBrake = true;
 
         public static final int driveAmpLimit = 80;
         public static final int boostDriveLimit = 90;
@@ -435,11 +435,11 @@ public final class Constants {
 	public final class LiftConstants {
 		public static final double liftMaxHeight = 30; // centimeters
 		public static final double canRangeOffset = 0.1; // what the canrange reads at lift-zero
-		public static final double positionTolerance = 0.15; // centimeters
+		public static final double positionTolerance = 1; // centimeters
 		public static final double maxOutput = 2.4; //volts, 20% max output
 
 		public enum LiftPosition { //meters
-			ground(1), pickup(15), place(6);
+			ground(1), pickup(28), place(6);
  			public final double height;
 			private LiftPosition(double height) {
 				this.height = height;
