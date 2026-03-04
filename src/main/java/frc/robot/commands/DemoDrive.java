@@ -66,7 +66,7 @@ public class DemoDrive extends SequentialCommandGroup {
             new SyncOffsets(swerve).withTimeout(1), // sync offsets (unnecessary)
             // new InstantCommand(RobotConfig::resetOffsetPositions), // sets ofsets to original
             // new TandemDrive(swerve, inputGetter::getJoystickVelocity).until(inputGetter::getRightBumper), // tandem drive with other robot manually
-            new FollowPath(swerve, new Path(() -> swerve.getPose(), PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead), PathConstants.wayPoints.getLast()) // follow path to station
+            new FollowPath(swerve, new Path(() -> swerve.getPose(), PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead), PathConstants.wayPoints.get(PathConstants.wayPoints.size()-1)) // follow path to station
         );
     }
 

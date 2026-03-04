@@ -487,7 +487,7 @@ public class NERDPoseEstimator {
         double distanceFromEstimate = m_poseEstimate.getTranslation()
                 .getDistance(visionRobotPoseMeters.getTranslation());
         if (distanceFromEstimate > acceptanceRadius) {
-            System.out.println("VISION RETURN: outlier");
+            // System.out.println("VISION RETURN: outlier, " + (distanceFromEstimate - acceptanceRadius));
 
             // return; // Outlier — too far from the current estimate
         }
@@ -506,11 +506,11 @@ public class NERDPoseEstimator {
         // Cap translation magnitude so a large (but valid) jump is spread across
         // multiple loops, keeping the displayed pose smooth.
         double translationNorm = Math.hypot(dx, dy);
-        if (translationNorm > kMaxCorrectionMeters) {
-            double scale = kMaxCorrectionMeters / translationNorm;
-            dx *= scale;
-            dy *= scale;
-        }
+        // if (translationNorm > kMaxCorrectionMeters) {
+        //     double scale = kMaxCorrectionMeters / translationNorm;
+        //     dx *= scale;
+        //     dy *= scale;
+        // }
         dtheta = MathUtil.clamp(dtheta, -kMaxCorrectionRadians, kMaxCorrectionRadians);
 
         var scaledTwist = new Twist2d(dx, dy, dtheta);

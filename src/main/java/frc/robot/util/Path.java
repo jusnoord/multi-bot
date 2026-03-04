@@ -27,7 +27,7 @@ public class Path {
         this.defaultSpeed = defaultSpeed;
         this.lookAhead = lookAhead;
         this.rotationalLookAhead = rotationalLookAhead;
-        waypoints.addFirst(start.get());
+        waypoints.add(0, start.get());
         this.waypoints = interpolate(waypoints);
     }
 

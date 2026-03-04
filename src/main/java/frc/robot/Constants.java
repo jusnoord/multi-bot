@@ -303,9 +303,9 @@ public final class Constants {
 	}
 
 	public final class DemoConstants {
-		public static final Pose2d wingApproximates[] = {new Pose2d(3.5, 1.24, Rotation2d.fromDegrees(90)), new Pose2d(3.5, 2.24, Rotation2d.fromDegrees(-90))};
+		public static final Pose2d wingApproximates[] = {new Pose2d(3.45, 1.24, Rotation2d.fromDegrees(90)), new Pose2d(3.45, 2.14, Rotation2d.fromDegrees(-90))};
 
-		public static final Pose2d stationPosition = PathConstants.wayPoints.getLast();
+		// public static final Pose2d stationPosition = PathConstants.wayPoints.getLast();
 
 		public static final Transform2d[] wingRelativeFormationOffsets = {
 			new Transform2d(0,  -0.45, Rotation2d.fromDegrees(90)), 
