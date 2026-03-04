@@ -10,7 +10,7 @@ rsync -avz --exclude-from='.rsync-exclude' ./ "${URL_MASTER}:${DESTINATION}"
 rsync -avz --exclude-from='.rsync-exclude' ./ "${URL_SLAVE}:${DESTINATION}"
 echo "Deployment complete!"
 
-echo "running remote sim and piping output to terminal..."
-ssh -t "${URL_MASTER}" "cd ./diffy-swerve-from-scratch && ./gradlew simulateJava -PhwSim" &
-ssh -t "${URL_SLAVE}" "cd ./diffy-swerve-from-scratch && ./gradlew simulateJava -PhwSim" &
-wait
+# echo "running remote sim and piping output to terminal..."
+# ssh -t "${URL_MASTER}" "cd ./diffy-swerve-from-scratch && ./gradlew simulateJava -PhwSim" &
+# ssh -t "${URL_SLAVE}" "cd ./diffy-swerve-from-scratch && ./gradlew simulateJava -PhwSim" &
+# wait
