@@ -200,7 +200,7 @@ public final class Constants {
 		{
 			{
 				// add(new Pose2d(2.5, 2.5, Rotation2d.fromDegrees(90))); // start
-				add(new Pose2d(3.0, 1.85, Rotation2d.fromDegrees(0))); // start
+				add(new Pose2d(1.7, 1.9, Rotation2d.fromDegrees(0))); // start
 
 				add(new Pose2d(2.3, 1.45, Rotation2d.fromDegrees(90))); // end
 				add(new Pose2d(1.33, 1.85, Rotation2d.fromDegrees(0)));
@@ -239,7 +239,7 @@ public final class Constants {
 		public static final double autoDrivekD_angle = 0.0;
 
 		public static final double highAutoDriveAngleTolerance = 0.2; // radians
-		public static final double highAutoDrivePositionTolerance = 0.4; // meters
+		public static final double highAutoDrivePositionTolerance = 0.05; // meters
 		public static final double lowAutoDriveAngleTolerance = 0.02; // radians
 		public static final double lowAutoDrivePositionTolerance = 0.01; // meters
 
@@ -303,7 +303,7 @@ public final class Constants {
 	}
 
 	public final class DemoConstants {
-		public static final Pose2d estimatedWingPosition = new Pose2d(3.45, 1.71, new Rotation2d());
+		public static final Pose2d estimatedWingPosition = new Pose2d(1.76, 2.5, Rotation2d.fromDegrees(90));
 		
 		// public static final Pose2d stationPosition = PathConstants.wayPoints.getLast();
 		
@@ -354,13 +354,13 @@ public final class Constants {
 
 		private static final double wheelBase = Units.inchesToMeters(19.75);
 		private static final double trackWidth = Units.inchesToMeters(19.75);
-		public static final Transform2d[] offsetPositions = {new Transform2d(new Translation2d(-0.965, 0.0), new Rotation2d()), new Transform2d(new Translation2d(0.965, 0.0), new Rotation2d(Math.PI))}; // default center of rotation of robot
+		public static final Transform2d[] offsetPositions = {new Transform2d(new Translation2d(-1d, 0.0), new Rotation2d()), new Transform2d(new Translation2d(1d, 0.0), new Rotation2d(Math.PI))}; // default center of rotation of robot
 		public static Command reset() {
 			return new InstantCommand(() -> resetOffsetPositions());
 		}
 		public static void resetOffsetPositions() {
-			offsetPositions[0] = new Transform2d(new Translation2d(-0.965, 0.0), new Rotation2d());
-			offsetPositions[1] = new Transform2d(new Translation2d(0.965, 0.0), new Rotation2d(Math.PI));
+			offsetPositions[0] = new Transform2d(new Translation2d(-1d, 0.0), new Rotation2d());
+			offsetPositions[1] = new Transform2d(new Translation2d(1d, 0.0), new Rotation2d(Math.PI));
 		}
 
 		/**
