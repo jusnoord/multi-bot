@@ -67,76 +67,7 @@ public class Path {
         return res;
     }
 
-    /** 
-     * sets next waypoint to the interpolated position between the two closest waypoints that's closest to the current robot pose
-     * @param currentPose current robot pose
-     */
-    public void getClosestWaypoint(Pose2d currentPose) {
-        double closestDistance = Double.MAX_VALUE;
-        int closestWaypointIndex = 0;
-        int secondClosestWaypointIndex = 0;
-        
-        // find two closest waypoints
-        for (int i = 0; i < waypoints.size(); i++) {
-            Pose2d waypoint = waypoints.get(i);
-            double distance = currentPose.getTranslation().getDistance(waypoint.getTranslation());
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                secondClosestWaypointIndex = closestWaypointIndex;
-                closestWaypointIndex = i;
-            }
-        }
-
-        //TODO: handle if closest waypoints are not adjacent
-
-        // interpolate between the two closest waypoints
-        // get relative distances between current position and both waypoints
-        Pose2d closestWaypoint = waypoints.get(closestWaypointIndex);
-        Pose2d secondClosestWaypoint = waypoints.get(secondClosestWaypointIndex);
-        double distanceToClosest = currentPose.getTranslation().getDistance(closestWaypoint.getTranslation());
-        double distanceToSecondClosest = currentPose.getTranslation().getDistance(secondClosestWaypoint.getTranslation());
-
-        // project current position onto the line between the two waypoints
-        /**
-         * A = closest waypoint
-         * B = second closest waypoint
-         * P = current position
-         * 
-         * AP ⋅ AB / |AB|^2 = t
-         */
-        double Ax = closestWaypoint.getX();
-        double Ay = closestWaypoint.getY();
-        double Bx = secondClosestWaypoint.getX();
-        double By = secondClosestWaypoint.getY();
-        double Px = currentPose.getX();
-        double Py = currentPose.getY();
-
-        double ABx = Bx - Ax;
-        double ABy = By - Ay;
-        double APx = Px - Ax;
-        double APy = Py - Ay;
-
-        double ABSquared = (ABx * ABx) + (ABy * ABy);
-        double projScalar = (APx * ABx + APy * ABy) / ABSquared;
-
-        double projX = Ax + projScalar * ABx;
-        double projY = Ay + projScalar * ABy;
-
-        Pose2d projectedPoint = new Pose2d(projX, projY, new Rotation2d());
-
-        // interpolate between the two waypoints based on the projected point
-        double distanceAlongLine = (closestWaypoint.getTranslation().getDistance(projectedPoint.getTranslation())) / (closestWaypoint.getTranslation().getDistance(secondClosestWaypoint.getTranslation()));
-
-        Pose2d interpolatedPosition = closestWaypoint.interpolate(secondClosestWaypoint, distanceAlongLine);
-
-        // insert the interpolated position into the waypoints list, between the two closest waypoints
-        int newWaypointIndex = Math.min(closestWaypointIndex, secondClosestWaypointIndex) + 1;
-
-        waypoints.add(newWaypointIndex, interpolatedPosition);
-        currentWaypointIndex = newWaypointIndex;
-    }
-
-    public Pose2d getNextWaypoint(Pose2d currentPose) {
+    private Pose2d getNextWaypoint(Pose2d currentPose) {
         // iterate through waypoints to find the next one beyond the lookahead distance
         while (currentWaypointIndex < waypoints.size()) {
             Pose2d waypoint = waypoints.get(currentWaypointIndex);
@@ -172,7 +103,10 @@ public class Path {
         double dx = nextWaypoint.getX() - currentPose.getX();
         double dy = nextWaypoint.getY() - currentPose.getY();
         double angle = Math.atan2(dy, dx);
-        double angularSpeed = -angleController.calculate(currentPose.getRotation().getDegrees(), nextWaypoint.getRotation().getDegrees());
+        double error = (currentPose.getRotation().getDegrees() - nextWaypoint.getRotation().getDegrees());
+        int numShortSpins = (int)((error + ((error > 0) ? 90 : -90)) / 180);// amount to add onto target
+        
+        double angularSpeed = -angleController.calculate(currentPose.getRotation().getDegrees(), nextWaypoint.getRotation().getDegrees() + (numShortSpins * 180));
         if (Math.abs(angularSpeed) > rotationalSpeedCap) {
             angularSpeed = Math.copySign(rotationalSpeedCap, angularSpeed);
         }
