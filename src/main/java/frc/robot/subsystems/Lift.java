@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Inches;
 
+import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.SlotConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -37,6 +38,7 @@ public class Lift extends SubsystemBase {
     public Lift() {
         liftMotor = makeMotor(RobotMap.liftMotorID, RobotMap.liftInvert, RobotMap.liftBrake, RobotMap.liftStatorLimit, RobotMap.liftEncoderToMechanismRatio, RobotMap.liftRotorToEncoderRatio, RobotMap.liftkP, RobotMap.liftkI, RobotMap.liftkD);
         canRange = new CANrange(RobotMap.canRangeID, "*"); //default config should be fine idk, might wanna decrease FOV
+        canRange.getConfigurator().apply(new CANrangeConfiguration());
 
         liftPose = NetworkTableInstance.getDefault().getTable("Lift").getSubTable(Constants.currentRobot.toString()).getDoubleTopic("Pose").publish();
         canRangePub = NetworkTableInstance.getDefault().getTable("Lift").getSubTable(Constants.currentRobot.toString()).getDoubleTopic("CanRange").publish();

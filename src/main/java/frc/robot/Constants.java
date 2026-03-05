@@ -194,8 +194,10 @@ public final class Constants {
 
 	public static final class PathConstants {
 		public static final double defaultSpeed = 0.1; // m/s
-		public static final double lookAhead = 0.08; // meters
-		public static final Rotation2d rotationalLookAhead = Rotation2d.fromDegrees(25); 
+		public static final double lookAhead = 0.32; // meters
+		public static final double lookAheadGain = 10;
+		public static final Rotation2d rotationalLookAhead = Rotation2d.fromDegrees(25);
+		public static final double rotationalSpeedCap = 20; //degrees per second
 		public static final List<Pose2d> wayPoints = new ArrayList<Pose2d>()
 		{
 			{
@@ -230,9 +232,9 @@ public final class Constants {
 		public static final double tandemPositionTolerance = 0.06; // meters
 
 		//autodrive gains
-		public static final double autoDrivekP = 0.5;
+		public static final double autoDrivekP = 1d;
 		public static final double autoDrivekI = 0.08;
-		public static final double autoDrivekD = 0.05;
+		public static final double autoDrivekD = 0.0;
 
 		public static final double autoDrivekP_angle = 0.7;
 		public static final double autoDrivekI_angle = 0.0;

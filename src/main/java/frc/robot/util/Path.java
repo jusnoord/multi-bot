@@ -10,6 +10,8 @@ import java.util.List;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.Constants.PathConstants;
+
 import java.util.function.Supplier;
 
 /** Add your docs here. */
@@ -20,7 +22,6 @@ public class Path {
     private Rotation2d rotationalLookAhead;
     private final double defaultSpeed;
     private int currentWaypointIndex = 0;
-    private final double rotationalSpeedCap = 10; // degrees per second
     private boolean isPathComplete = false;
     Supplier<Pose2d> start;
 
@@ -49,8 +50,8 @@ public class Path {
         //     }
         // }
         List<Pose2d> res = new ArrayList<>();
-        double desiredDistance = lookAhead / 4;
-        double desiredRotationDistance = rotationalLookAhead.getDegrees() / 4;
+        double desiredDistance = lookAhead / PathConstants.lookAheadGain;
+        double desiredRotationDistance = rotationalLookAhead.getDegrees() / PathConstants.lookAheadGain;
         for (int i = 0; i < waypoints.size() - 1; i++) {
             Pose2d start = waypoints.get(i);
             Pose2d end = waypoints.get(i + 1);
@@ -102,8 +103,8 @@ public class Path {
         double angle = Math.atan2(dy, dx);
         
         double angularSpeed = -angleController.calculate(currentPose.getRotation().getDegrees(), nextWaypoint.getRotation().getDegrees());
-        if (Math.abs(angularSpeed) > rotationalSpeedCap) {
-            angularSpeed = Math.copySign(rotationalSpeedCap, angularSpeed);
+        if (Math.abs(angularSpeed) > PathConstants.rotationalSpeedCap) {
+            angularSpeed = Math.copySign(PathConstants.rotationalSpeedCap, angularSpeed);
         }
 
         isPathComplete = currentWaypointIndex >= waypoints.size() - 1 && distance < (lookAhead * 2);
