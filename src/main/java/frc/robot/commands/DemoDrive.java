@@ -33,7 +33,8 @@ public class DemoDrive extends SequentialCommandGroup {
     
 
     Supplier<Integer> wingEstimateApproximateToUse;
-    Supplier<Integer> wingVisionApproximateToUse;
+    Supplier<Integer> wingVisionToUse;
+    Supplier<Integer> homeToUse;
     StructSubscriber<Pose2d> otherRobotPoseSub = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.getOpposite().toString()).getStructTopic("RobotPose", Pose2d.struct).subscribe(new Pose2d());
     StructSubscriber<Pose2d> otherRobotWingPoseSub = NetworkTableInstance.getDefault().getTable("WingPoseEstimator").getStructTopic(Constants.currentRobot.getOpposite().toString() + " pose estimate", Pose2d.struct).subscribe(new Pose2d());
     
@@ -66,14 +67,17 @@ public class DemoDrive extends SequentialCommandGroup {
             new InstantCommand(() -> chooseWingVisionApproximateToUse(swerve, wingPoseEstimator)),
             new WaitUntilCommand(isOtherRobotFinished::get),
             new WaitCommand(0.5),
-            new AutoDrive(swerve, () -> wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[wingVisionApproximateToUse.get()]), false), // PID to exact wing position
+            new AutoDrive(swerve, () -> wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[wingVisionToUse.get()]), false), // PID to exact wing position
             new WaitUntilCommand(isOtherRobotFinished::get), // wait for other robot to finish
             // new WaitCommand(0.2),
             lift.setLiftState(LiftPosition.pickup).withTimeout(3), // lift up
             new SyncOffsets(swerve).withTimeout(1), // sync offsets (unnecessary)
             // new InstantCommand(RobotConfig::resetOffsetPositions), // sets ofsets to original
             // new TandemDrive(swerve, inputGetter::getJoystickVelocity).until(inputGetter::getRightBumper), // tandem drive with other robot manually
-            new FollowPath(swerve, new Path(() -> wingPoseEstimator.getEstimatedPose(), PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead)) // follow path to station
+            new FollowPath(swerve, new Path(() -> wingPoseEstimator.getEstimatedPose(), PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead)), // follow path to station
+            lift.setLiftState(LiftPosition.place).withTimeout(3), // lift down
+            new InstantCommand(() -> chooseHome(swerve)),
+            new AutoDrive(swerve, () -> DemoConstants.homePositions[homeToUse.get()], true) // follow path to approximate wing position
         );
     }
 
@@ -86,7 +90,7 @@ public class DemoDrive extends SequentialCommandGroup {
         IntegerSubscriber useMasterTagSubscriber = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master tag post-vision").subscribe(-1);
         if ((int)useMasterTagSubscriber.get() == -1) {
             IntegerPublisher useMasterTagPublisher = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master tag post-vision").publish();
-                wingVisionApproximateToUse = () -> {
+                wingVisionToUse = () -> {
                 if(Math.abs(swerve.getPose().minus(wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[0])).getTranslation().getNorm()) < Math.abs(swerve.getPose().minus(wingPoseEstimator.getEstimatedPose().plus(DemoConstants.wingRelativeFormationOffsets[1])).getTranslation().getNorm())) {
                     useMasterTagPublisher.accept(1);
                     return 0;
@@ -95,7 +99,24 @@ public class DemoDrive extends SequentialCommandGroup {
                     return 1;
                 }};
         } else {
-            wingVisionApproximateToUse = () -> ((int)useMasterTagSubscriber.get());
+            wingVisionToUse = () -> ((int)useMasterTagSubscriber.get());
+        }
+    }
+
+    public void chooseHome(Swerve swerve) {
+        IntegerSubscriber homeSubscriber = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master home").subscribe(-1);
+        if ((int)homeSubscriber.get() == -1) {
+            IntegerPublisher homePublisher = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master home").publish();
+                homeToUse = () -> {
+                if(Math.abs(swerve.getPose().minus(DemoConstants.homePositions[0]).getTranslation().getNorm()) < Math.abs(swerve.getPose().minus(DemoConstants.homePositions[1]).getTranslation().getNorm())) {
+                    homePublisher.accept(1);
+                    return 0;
+                } else {
+                    homePublisher.accept(0);
+                    return 1;
+                }};
+        } else {
+            homeToUse = () -> ((int)homeSubscriber.get());
         }
     }
 

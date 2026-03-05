@@ -202,10 +202,11 @@ public final class Constants {
 		{
 			{
 				add(new Pose2d(1.75, 1.9, Rotation2d.fromDegrees(180))); 
-				add(new Pose2d(1.75, 1.45, Rotation2d.fromDegrees(90))); 
-				add(new Pose2d(1.35, 1.1, Rotation2d.fromDegrees(0)));
-				add(new Pose2d(1.6, 0.8, Rotation2d.fromDegrees(0)));
+				add(new Pose2d(1.75, 1.45, Rotation2d.fromDegrees(180))); 
+				add(new Pose2d(2.0, 1.3, Rotation2d.fromDegrees(90))); 
+				add(new Pose2d(2.2, 1.1, Rotation2d.fromDegrees(0)));
 				add(new Pose2d(2.2, 0.8, Rotation2d.fromDegrees(0)));
+				// add(new Pose2d(2.2, 0.8, Rotation2d.fromDegrees(0)));
 			}
 		};
 	}
@@ -314,7 +315,7 @@ public final class Constants {
 			new Transform2d(0,  0.5, Rotation2d.fromDegrees(-90))
 		};
 		public static final Pose2d wingApproximates[] = {estimatedWingPosition.transformBy(wingRelativeFormationOffsets[0]),estimatedWingPosition.transformBy(wingRelativeFormationOffsets[1])};
-		
+		public static final Pose2d homePositions[] = {new Pose2d(0.5, 1.8, Rotation2d.kZero), new Pose2d(2.5, 1.8, Rotation2d.k180deg)};
 	}
 
 	/**
