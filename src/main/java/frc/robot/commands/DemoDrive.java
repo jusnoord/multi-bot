@@ -36,7 +36,7 @@ public class DemoDrive extends SequentialCommandGroup {
     Supplier<Integer> wingVisionApproximateToUse;
     StructSubscriber<Pose2d> otherRobotPoseSub = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.getOpposite().toString()).getStructTopic("RobotPose", Pose2d.struct).subscribe(new Pose2d());
     StructSubscriber<Pose2d> otherRobotWingPoseSub = NetworkTableInstance.getDefault().getTable("WingPoseEstimator").getStructTopic(Constants.currentRobot.getOpposite().toString() + " pose estimate", Pose2d.struct).subscribe(new Pose2d());
-
+    
     /** Creates a new DemoDrive. */
     public DemoDrive(Swerve swerve, Lift lift, WingPoseEstimator wingPoseEstimator, InputGetter inputGetter) {
         isOtherRobotFinished = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.getOpposite().toString()).getBooleanTopic("autodrive at target").subscribe(false);
@@ -45,18 +45,19 @@ public class DemoDrive extends SequentialCommandGroup {
         if(Constants.IS_MASTER) {
             BooleanPublisher useMasterTagPublisher = NetworkTableInstance.getDefault().getTable("DemoMode").getBooleanTopic("use master tag").publish();
             wingEstimateApproximateToUse = () -> {
-            if(Math.abs(swerve.getPose().minus(DemoConstants.wingApproximates[0]).getTranslation().getNorm()) < (Math.abs(swerve.getPose().minus(DemoConstants.wingApproximates[1]).getTranslation().getNorm()))) {
-                useMasterTagPublisher.accept(false);
-                return 0;
-            } else {
-                useMasterTagPublisher.accept(true);
-                return 1;
-            }};
+                if(Math.abs(swerve.getPose().minus(DemoConstants.wingApproximates[0]).getTranslation().getNorm()) < (Math.abs(swerve.getPose().minus(DemoConstants.wingApproximates[1]).getTranslation().getNorm()))) {
+                    useMasterTagPublisher.accept(false);
+                    return 0;
+                } else {
+                    useMasterTagPublisher.accept(true);
+                    return 1;
+                }};
         } else {
             BooleanSubscriber useMasterTagSubscriber = NetworkTableInstance.getDefault().getTable("DemoMode").getBooleanTopic("use master tag").subscribe(true);
             wingEstimateApproximateToUse = () -> useMasterTagSubscriber.get() ? 0 : 1;
         }
-
+        // Supplier<Pose2d> FormationPoseSupplier = () -> (Constants.IS_MASTER ? swerve.getPose() : otherRobotPoseSub.get()).plus(Constants.DemoConstants.wingRelativeFormationOffsets[wingEstimateApproximateToUse.get()].inverse());
+            
         
         addCommands(
             new InstantCommand(() -> resetPublishers()),
@@ -72,7 +73,7 @@ public class DemoDrive extends SequentialCommandGroup {
             new SyncOffsets(swerve).withTimeout(1), // sync offsets (unnecessary)
             // new InstantCommand(RobotConfig::resetOffsetPositions), // sets ofsets to original
             // new TandemDrive(swerve, inputGetter::getJoystickVelocity).until(inputGetter::getRightBumper), // tandem drive with other robot manually
-            new FollowPath(swerve, new Path(() -> swerve.getPose(), PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead), PathConstants.wayPoints.get(PathConstants.wayPoints.size()-1)) // follow path to station
+            new FollowPath(swerve, new Path(() -> wingPoseEstimator.getEstimatedPose(), PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead), PathConstants.wayPoints.get(PathConstants.wayPoints.size()-1)) // follow path to station
         );
     }
 
