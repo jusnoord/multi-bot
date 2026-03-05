@@ -102,6 +102,9 @@ public class AutoDrive extends Command {
         //initialize telemetry
         targetPosePublisher = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.toString()).getStructTopic("targetPose", Pose2d.struct).getEntry(new Pose2d());
         atTargetPublisher.accept(false);
+        xPID.reset();
+        yPID.reset();
+        anglePID.reset();
     }
 
     @Override
