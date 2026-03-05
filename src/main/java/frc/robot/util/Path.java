@@ -73,16 +73,13 @@ public class Path {
             Pose2d waypoint = waypoints.get(currentWaypointIndex);
             double distance = currentPose.getTranslation().getDistance(waypoint.getTranslation());
             double rotationalDistance = Math.abs(waypoint.getRotation().minus(currentPose.getRotation()).getRotations());
+            rotationalDistance -= 180*(int)((rotationalDistance + 90)/ 180);
+            rotationalDistance = Math.abs(rotationalDistance);
             if (distance > lookAhead || rotationalDistance > rotationalLookAhead.getRotations()) {
-                if (currentWaypointIndex == 0) return waypoint;
-                Pose2d prevWaypoint = waypoints.get(currentWaypointIndex - 1);
-                return prevWaypoint;
-                // Rotation2d prevwaypointRotation = prevWaypoint.getRotation();
-                // if (Math.abs(prevwaypointRotation.minus(currentPose.getRotation()).getRotations()) < rotationalLookAhead.getRotations()) {
-                //     return waypoint;
-                // } else {
-                //     return prevWaypoint;
-                // }
+                Pose2d waypointToReturn = currentWaypointIndex == 0 ? waypoint : waypoints.get(currentWaypointIndex-1);
+                double error = (currentPose.getRotation().getDegrees() - waypointToReturn.getRotation().getDegrees());
+                int numShortSpins = (int)((error + ((error > 0) ? 90 : -90)) / 180);// amount to add onto target
+                return new Pose2d(waypointToReturn.getTranslation(), waypointToReturn.getRotation().plus(Rotation2d.fromDegrees(numShortSpins * 180)));
             }
             currentWaypointIndex++;
         }
@@ -103,10 +100,8 @@ public class Path {
         double dx = nextWaypoint.getX() - currentPose.getX();
         double dy = nextWaypoint.getY() - currentPose.getY();
         double angle = Math.atan2(dy, dx);
-        double error = (currentPose.getRotation().getDegrees() - nextWaypoint.getRotation().getDegrees());
-        int numShortSpins = (int)((error + ((error > 0) ? 90 : -90)) / 180);// amount to add onto target
         
-        double angularSpeed = -angleController.calculate(currentPose.getRotation().getDegrees(), nextWaypoint.getRotation().getDegrees() + (numShortSpins * 180));
+        double angularSpeed = -angleController.calculate(currentPose.getRotation().getDegrees(), nextWaypoint.getRotation().getDegrees());
         if (Math.abs(angularSpeed) > rotationalSpeedCap) {
             angularSpeed = Math.copySign(rotationalSpeedCap, angularSpeed);
         }
