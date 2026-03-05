@@ -39,11 +39,13 @@ public class Path {
         }
         List<Pose2d> res = new ArrayList<>();
         double desiredDistance = lookAhead / 4;
+        double desiredRotationDistance = rotationalLookAhead.getDegrees() / 4;
         for (int i = 0; i < waypoints.size() - 1; i++) {
             Pose2d start = waypoints.get(i);
             Pose2d end = waypoints.get(i + 1);
             double distance = start.getTranslation().getDistance(end.getTranslation());
-            int numInterpolations = (int)(distance / desiredDistance);
+            double rotationalDistance = start.getRotation().minus(end.getRotation()).getDegrees();
+            int numInterpolations = (int)Math.max(distance / desiredDistance, rotationalDistance / desiredRotationDistance);
             for (int j = 0; j < numInterpolations; j++) {
                 double t = ((double)j) / (numInterpolations);
                 Pose2d interpolated = start.interpolate(end, t);
