@@ -47,6 +47,7 @@ import frc.robot.Constants.RobotConfig;
 import frc.robot.Constants.RobotMap;
 import frc.robot.Constants.RobotMap.PodConfig;
 import frc.robot.Constants.RobotConfig.SingleRobotConfig;
+import frc.robot.util.ClaudePoseEstimator;
 import frc.robot.util.LegacyPoseEstimator;
 import frc.robot.util.NERDPoseEstimator;
 import frc.robot.Constants;
@@ -60,7 +61,7 @@ public class Swerve extends SubsystemBase {
 	
 	private final ArrayList<DrivePod> pods = new ArrayList<DrivePod>();
 
-	private final NERDPoseEstimator poseEstimator;
+	private final ClaudePoseEstimator poseEstimator;
 	private final SwerveDriveKinematics drivetrainKinematics;
 
 	public double targetAngle = 0;
@@ -93,7 +94,7 @@ public class Swerve extends SubsystemBase {
 
 
 		// initialize odometry based on the pod positions
-		poseEstimator = new NERDPoseEstimator(
+		poseEstimator = new ClaudePoseEstimator(
 				drivetrainKinematics,
 				getGyro(),
 				getModulePositions(),
