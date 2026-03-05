@@ -200,9 +200,9 @@ public final class Constants {
 		{
 			{
 				add(new Pose2d(1.75, 1.9, Rotation2d.fromDegrees(0))); 
-				add(new Pose2d(1.3, 1.45, Rotation2d.fromDegrees(90))); 
-				add(new Pose2d(1.5, 1.1, Rotation2d.fromDegrees(180)));
-				add(new Pose2d(1.0, 0.8, Rotation2d.fromDegrees(180)));
+				add(new Pose2d(1.75, 1.45, Rotation2d.fromDegrees(90))); 
+				add(new Pose2d(1.35, 1.1, Rotation2d.fromDegrees(180)));
+				add(new Pose2d(1.6, 0.8, Rotation2d.fromDegrees(180)));
 				add(new Pose2d(2.2, 0.8, Rotation2d.fromDegrees(180)));
 			}
 		};
