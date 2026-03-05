@@ -76,7 +76,7 @@ public class DemoDrive extends SequentialCommandGroup {
             // new TandemDrive(swerve, inputGetter::getJoystickVelocity).until(inputGetter::getRightBumper), // tandem drive with other robot manually
             new FollowPath(swerve, new Path(() -> wingPoseEstimator.getEstimatedPose(), PathConstants.wayPoints, PathConstants.defaultSpeed, PathConstants.lookAhead, PathConstants.rotationalLookAhead)), // follow path to station
             lift.setLiftState(LiftPosition.place).withTimeout(3), // lift down
-            new InstantCommand(() -> chooseHome(swerve)),
+            new InstantCommand(() -> chooseHome(swerve, otherRobotPoseSub)),
             new AutoDrive(swerve, () -> DemoConstants.homePositions[homeToUse.get()], true) // follow path to approximate wing position
         );
     }
@@ -103,12 +103,12 @@ public class DemoDrive extends SequentialCommandGroup {
         }
     }
 
-    public void chooseHome(Swerve swerve) {
+    public void chooseHome(Swerve swerve, StructSubscriber<Pose2d> otherPose) {
         IntegerSubscriber homeSubscriber = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master home").subscribe(-1);
         if ((int)homeSubscriber.get() == -1) {
             IntegerPublisher homePublisher = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master home").publish();
                 homeToUse = () -> {
-                if(Math.abs(swerve.getPose().minus(DemoConstants.homePositions[0]).getTranslation().getNorm()) < Math.abs(swerve.getPose().minus(DemoConstants.homePositions[1]).getTranslation().getNorm())) {
+                if(swerve.getPose().minus(DemoConstants.homePositions[0]).getTranslation().getNorm() + otherPose.get().minus(DemoConstants.homePositions[1]).getTranslation().getNorm() < swerve.getPose().minus(DemoConstants.homePositions[1]).getTranslation().getNorm() + otherPose.get().minus(DemoConstants.homePositions[0]).getTranslation().getNorm() ) {
                     homePublisher.accept(1);
                     return 0;
                 } else {
