@@ -39,7 +39,6 @@ public class FollowPath extends Command {
     private final Swerve swerve;
 
     private Path path;
-    private final Pose2d finalPose;
 
     private StructEntry<Pose2d> targetPosePublisher;
     private StructSubscriber<Pose2d> masterPoseSubscriber;
@@ -67,10 +66,9 @@ public class FollowPath extends Command {
     private boolean robotAtTarget = false;
     private boolean PIDAtTolerance = false;
 
-    public FollowPath(Swerve swerve, Path path, Pose2d finalPose) {
+    public FollowPath(Swerve swerve, Path path) {
         this.swerve = swerve;
         this.path = path;
-        this.finalPose = finalPose;
 
         masterPoseSubscriber = NetworkTableInstance.getDefault().getTable(Constants.RobotType.master.toString()).getStructTopic("RobotPose", Pose2d.struct).subscribe(new Pose2d(), Constants.NTPubSub);
         targetPosePublisher = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.toString()).getStructTopic("targetPose", Pose2d.struct).getEntry(new Pose2d());
@@ -133,12 +131,13 @@ public class FollowPath extends Command {
         if(!masterFinishedPath) {
             formationVelocity = path.getVelocity(centerFormationPose, anglePIDRobot); //if path not finished, continue
         } else {
+            Pose2d finalPose = path.getLastWaypoint(centerFormationPose);
             //else, get velocities from PID controllers to drive to final pose
             double xVeloc = MathUtil.clamp(xVelocityPIDRobot.calculate(centerFormationPose.getX(), finalPose.getX()), -RobotConstants.maxAutoDriveSpeedMetersPerSecond, RobotConstants.maxAutoDriveSpeedMetersPerSecond);
             double yVeloc = MathUtil.clamp(yVelocityPIDRobot.calculate(centerFormationPose.getY(), finalPose.getY()), -RobotConstants.maxAutoDriveSpeedMetersPerSecond, RobotConstants.maxAutoDriveSpeedMetersPerSecond);
             double angleVeloc = -MathUtil.clamp(angleVelocityPIDRobot.calculate(centerFormationPose.getRotation().getRadians(), finalPose.getRotation().getRadians()), -RobotConstants.maxAutoDriveAngularSpeedRadiansPerSecond, RobotConstants.maxAutoDriveAngularSpeedRadiansPerSecond);
 
-            if(xPID.atSetpoint() && yPID.atSetpoint() && anglePID.atSetpoint()) {
+            if(xVelocityPIDRobot.atSetpoint() && yVelocityPIDRobot.atSetpoint() && angleVelocityPIDRobot.atSetpoint()) {
                 robotAtTarget = true;
                 formationVelocity = new Pose2d();
             } else {

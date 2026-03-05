@@ -4,6 +4,8 @@
 
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,6 +112,13 @@ public class Path {
         isPathComplete = currentWaypointIndex >= waypoints.size() - 1 && distance < (lookAhead * 2);
 
         return new Pose2d(speed * Math.cos(angle), speed * Math.sin(angle), Rotation2d.fromDegrees(angularSpeed));
+    }
+
+    public Pose2d getLastWaypoint(Pose2d currentPose) {
+        Pose2d res = waypoints.get(waypoints.size()-1);
+        double error = (currentPose.getRotation().getDegrees() - res.getRotation().getDegrees());
+        int numShortSpins = (int)((error + ((error > 0) ? 90 : -90)) / 180);// amount to add onto target
+        return new Pose2d(res.getTranslation(), res.getRotation().plus(Rotation2d.fromDegrees(numShortSpins*180)));
     }
 
     public void reset() {
