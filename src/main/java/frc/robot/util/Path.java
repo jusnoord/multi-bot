@@ -12,6 +12,7 @@ import java.util.List;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.Constants.PathConstants;
 
 import java.util.function.Supplier;
@@ -26,6 +27,8 @@ public class Path {
     private int currentWaypointIndex = 0;
     private boolean isPathComplete = false;
     Supplier<Pose2d> start;
+
+    private StructPublisher<Pose2d> targetPosePub;
 
     public Path(Supplier<Pose2d> start, List<Pose2d> waypoints, double defaultSpeed, double lookAhead, Rotation2d rotationalLookAhead) {
         this.defaultSpeed = defaultSpeed;
@@ -75,10 +78,13 @@ public class Path {
         while (currentWaypointIndex < waypoints.size()) {
             Pose2d waypoint = waypoints.get(currentWaypointIndex);
             double distance = currentPose.getTranslation().getDistance(waypoint.getTranslation());
-            double rotationalDistance = Math.abs(waypoint.getRotation().minus(currentPose.getRotation()).getRotations());
+            double rotationalDistance = Math.abs(waypoint.getRotation().minus(currentPose.getRotation()).getDegrees());
+
+            System.out.println("rotational distance: " + rotationalDistance);
+
             rotationalDistance -= 180*(int)((rotationalDistance + 90)/ 180);
             rotationalDistance = Math.abs(rotationalDistance);
-            if (distance > lookAhead || rotationalDistance > rotationalLookAhead.getRotations()) {
+            if (distance > lookAhead || rotationalDistance > rotationalLookAhead.getDegrees()) {
                 Pose2d waypointToReturn = currentWaypointIndex == 0 ? waypoint : waypoints.get(currentWaypointIndex-1);
                 double error = (currentPose.getRotation().getDegrees() - waypointToReturn.getRotation().getDegrees());
                 int numShortSpins = (int)((error + ((error > 0) ? 90 : -90)) / 180);// amount to add onto target

@@ -20,6 +20,7 @@ import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructEntry;
 import edu.wpi.first.networktables.StructSubscriber;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -43,6 +44,8 @@ public class AutoDrive extends Command {
 
     private BooleanPublisher atTargetPublisher;
     private boolean PIDAtTolerance = false;
+
+    double lastIncompleteTime = Timer.getFPGATimestamp();
 
 
 
@@ -68,7 +71,7 @@ public class AutoDrive extends Command {
         double kP, kI, kD, anglekP, anglekI, anglekD, angleTolerance, positionTolerance;
 
         kP = RobotConstants.autoDrivekP;
-        kI = RobotConstants.autoDrivekI;
+        kI = 0;
         kD = RobotConstants.autoDrivekD;
 
         anglekP = RobotConstants.autoDrivekP_angle;
@@ -78,9 +81,10 @@ public class AutoDrive extends Command {
         if(lowAccuracy) {
             angleTolerance = RobotConstants.highAutoDriveAngleTolerance;
             positionTolerance = RobotConstants.highAutoDrivePositionTolerance;
-        } else {        
+        } else {
             angleTolerance = RobotConstants.lowAutoDriveAngleTolerance;
             positionTolerance = RobotConstants.lowAutoDrivePositionTolerance;
+            kI = RobotConstants.autoDrivekI;
         }
 
         xPID = new PIDController(kP, kI, kD);
@@ -98,6 +102,9 @@ public class AutoDrive extends Command {
     public void initialize() {
         System.out.println("AutoDrive started");
         anglePID.enableContinuousInput(0, Math.PI * 2);
+
+        PIDAtTolerance = false;
+        lastIncompleteTime = Timer.getFPGATimestamp();
 
         //initialize telemetry
         targetPosePublisher = NetworkTableInstance.getDefault().getTable(Constants.currentRobot.toString()).getStructTopic("targetPose", Pose2d.struct).getEntry(new Pose2d());
@@ -120,10 +127,20 @@ public class AutoDrive extends Command {
         
         PIDAtTolerance = anglePID.atSetpoint() && xPID.atSetpoint() && yPID.atSetpoint();
 
+
         //clamp the outputs to max speeds
         xOut = MathUtil.clamp(xOut, -RobotConstants.maxAutoDriveSpeedMetersPerSecond, RobotConstants.maxAutoDriveSpeedMetersPerSecond);
         yOut = MathUtil.clamp(yOut, -RobotConstants.maxAutoDriveSpeedMetersPerSecond, RobotConstants.maxAutoDriveSpeedMetersPerSecond);
         rOut = MathUtil.clamp(rOut, -RobotConstants.maxAutoDriveAngularSpeedRadiansPerSecond, RobotConstants.maxAutoDriveAngularSpeedRadiansPerSecond);
+
+
+        if(!PIDAtTolerance) {
+            lastIncompleteTime = Timer.getFPGATimestamp();
+        } else {
+            xOut = 0;
+            yOut = 0;
+            rOut = 0;
+        }
 
         swerve.setRobotSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xOut, yOut, rOut, currentPose.getRotation()));
         
@@ -136,6 +153,8 @@ public class AutoDrive extends Command {
 
         //update telemetry
         targetPosePublisher.accept(robotTargetPose);
+
+        
     }
 
     @Override
@@ -147,6 +166,6 @@ public class AutoDrive extends Command {
 
     @Override
     public boolean isFinished() {
-        return PIDAtTolerance;
+        return (Timer.getFPGATimestamp() - lastIncompleteTime) > 1 && PIDAtTolerance;
     }
 }

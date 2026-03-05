@@ -451,7 +451,7 @@ public class ClaudePoseEstimator {
     public synchronized void addVisionMeasurement(
             Pose2d visionRobotPoseMeters, double timestampSeconds) {
 
-        System.out.println("got a vision update from " + (Timer.getFPGATimestamp()-timestampSeconds) + " ago");
+        // System.out.println("got a vision update from " + (Timer.getFPGATimestamp()-timestampSeconds) + " ago");
 
         // ── Guard: frame too old for the latency-compensation buffer ───────────
         if (m_odometryPoseBuffer.getInternalBuffer().isEmpty()

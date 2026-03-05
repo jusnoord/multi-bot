@@ -233,9 +233,9 @@ public final class Constants {
 		public static final double tandemPositionTolerance = 0.06; // meters
 
 		//autodrive gains
-		public static final double autoDrivekP = 1d;
-		public static final double autoDrivekI = 0.08;
-		public static final double autoDrivekD = 0.0;
+		public static final double autoDrivekP = 1;
+		public static final double autoDrivekI = 0.1; //only applies in high-tolerance mode (mmm bad code)
+		public static final double autoDrivekD = 0.03;
 
 		public static final double autoDrivekP_angle = 0.7;
 		public static final double autoDrivekI_angle = 0.0;
@@ -306,7 +306,7 @@ public final class Constants {
 	}
 
 	public final class DemoConstants {
-		public static final Pose2d estimatedWingPosition = new Pose2d(1.76, 2.5, Rotation2d.fromDegrees(90));
+		public static final Pose2d estimatedWingPosition = new Pose2d(1.71, 2.53, Rotation2d.fromDegrees(90));
 		
 		// public static final Pose2d stationPosition = PathConstants.wayPoints.getLast();
 		
