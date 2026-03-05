@@ -57,6 +57,9 @@ public class WingPoseEstimator {
         posePublisher = NetworkTableInstance.getDefault().getTable("WingPoseEstimator").getStructTopic(Constants.currentRobot.toString() + " pose estimate", Pose2d.struct).publish();
         // slavePoseSubscriber = NetworkTableInstance.getDefault().getTable("WingPoseEstimator").getStructTopic("slave pose subscriber", Pose2d.struct).subscribe(new Pose2d());
 
+        //initialize wing pose
+        wingPoseKF.setXhat(VecBuilder.fill(DemoConstants.estimatedWingPosition.getX(), DemoConstants.estimatedWingPosition.getY(), DemoConstants.estimatedWingPosition.getRotation().getRadians()));
+
     }
 
     public void addVisionMeasurement(Pose2d input) {
