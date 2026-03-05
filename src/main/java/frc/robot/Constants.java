@@ -315,7 +315,7 @@ public final class Constants {
 			new Transform2d(0,  0.5, Rotation2d.fromDegrees(-90))
 		};
 		public static final Pose2d wingApproximates[] = {estimatedWingPosition.transformBy(wingRelativeFormationOffsets[0]),estimatedWingPosition.transformBy(wingRelativeFormationOffsets[1])};
-		public static final Pose2d homePositions[] = {new Pose2d(0.5, 1.8, Rotation2d.kZero), new Pose2d(2.5, 1.8, Rotation2d.k180deg)};
+		public static final Pose2d homePositions[] = {new Pose2d(0.73, 1.8, Rotation2d.kZero), new Pose2d(2.73, 1.8, Rotation2d.k180deg)};
 	}
 
 	/**

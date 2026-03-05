@@ -108,7 +108,7 @@ public class DemoDrive extends SequentialCommandGroup {
         if ((int)homeSubscriber.get() == -1) {
             IntegerPublisher homePublisher = NetworkTableInstance.getDefault().getTable("DemoMode").getIntegerTopic("use master home").publish();
                 homeToUse = () -> {
-                if(swerve.getPose().minus(DemoConstants.homePositions[0]).getTranslation().getNorm() + otherPose.get().minus(DemoConstants.homePositions[1]).getTranslation().getNorm() < swerve.getPose().minus(DemoConstants.homePositions[1]).getTranslation().getNorm() + otherPose.get().minus(DemoConstants.homePositions[0]).getTranslation().getNorm() ) {
+                if(swerve.getPose().getX() < otherPose.get().getX()) {
                     homePublisher.accept(1);
                     return 0;
                 } else {
