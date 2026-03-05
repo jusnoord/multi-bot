@@ -387,11 +387,15 @@ public class PhotonVision extends SubsystemBase {
 
             // Pose2d newPose = robotToTag.plus(VisionConstants.tagPose);
             // Pose2d newSlavePose = new Pose2d(newSlaveTranslation, newSlaveRotation);
-            updateCurrentRobot(new TimestampedVisionUpdate(newPose,timestamp,ambiguity));
             // updateOtherRobot(new TimestampedVisionUpdate(newSlavePose,timestamp,ambiguity));
-
+            
             // globalDisplacementPublisher.set(new Pose2d(displacementGlobalFrame.times(-0.5).plus(centerOfFormation), new Rotation2d()));
-
+            
+            
+            // translate vision timestamps in master-time to slave-time before updating slave 
+            timestamp -= (NetworkTableInstance.getDefault().getServerTimeOffset().getAsLong() / 1e6);
+            updateCurrentRobot(new TimestampedVisionUpdate(newPose,timestamp,ambiguity));
+            
             switch (caller) {
                 case master:
                     masterVisionUpdatePublisher.set(newPose);
@@ -547,7 +551,7 @@ public class PhotonVision extends SubsystemBase {
                         // drivetrain.updateOdo();
 
                         // vision timestamps are based on NT epoch, which is determined by the master. subtract the time offset to place in slave-time
-                        timestamp = result.getTimestampSeconds() + (NetworkTableInstance.getDefault().getServerTimeOffset().getAsLong() / 10e6);
+                        timestamp = result.getTimestampSeconds() - (NetworkTableInstance.getDefault().getServerTimeOffset().getAsLong() / 1e6);
 
 
                         // first, do multitag as that should be done only once per result

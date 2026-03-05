@@ -451,6 +451,8 @@ public class ClaudePoseEstimator {
     public synchronized void addVisionMeasurement(
             Pose2d visionRobotPoseMeters, double timestampSeconds) {
 
+        System.out.println("got a vision update from " + (Timer.getFPGATimestamp()-timestampSeconds) + " ago");
+
         // ── Guard: frame too old for the latency-compensation buffer ───────────
         if (m_odometryPoseBuffer.getInternalBuffer().isEmpty()
                 || m_odometryPoseBuffer.getInternalBuffer().lastKey() - kBufferDuration
@@ -585,7 +587,7 @@ public class ClaudePoseEstimator {
         double newestNeeded = m_visionUpdates.floorKey(oldestOdoTs);
         var updatesToPrune = m_visionUpdates.headMap(newestNeeded, false);
         updatesToPrune.clear();
-        System.out.println(m_visionUpdates.size() + " updates left from " + (Timer.getFPGATimestamp()-newestNeeded) + "seconds ago");
+        // System.out.println(m_visionUpdates.size() + " updates left from " + (Timer.getFPGATimestamp()-newestNeeded) + "seconds ago");
     }
 
     // ══════════════════════════════════════════════════════════════════════════
