@@ -88,6 +88,8 @@ public class FollowPath extends Command {
 
     @Override
     public void initialize() {
+        path.init();
+        
         robotAtTarget = false;
         PIDAtTolerance = false;
         path.reset();

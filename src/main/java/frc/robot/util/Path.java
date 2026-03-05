@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 
 /** Add your docs here. */
 public class Path {
+    private final List<Pose2d> uninterpolatedWaypoints;
     private List<Pose2d> waypoints;
     private double lookAhead;
     private Rotation2d rotationalLookAhead;
@@ -21,13 +22,23 @@ public class Path {
     private int currentWaypointIndex = 0;
     private final double rotationalSpeedCap = 10; // degrees per second
     private boolean isPathComplete = false;
+    Supplier<Pose2d> start;
 
     public Path(Supplier<Pose2d> start, List<Pose2d> waypoints, double defaultSpeed, double lookAhead, Rotation2d rotationalLookAhead) {
         this.defaultSpeed = defaultSpeed;
+        this.start = start;
         this.lookAhead = lookAhead;
         this.rotationalLookAhead = rotationalLookAhead;
+        // waypoints.add(0, start.get());
+        this.uninterpolatedWaypoints = waypoints;
+        // this.waypoints = interpolate(waypoints);
+    }
+    public void init() {
+        waypoints = uninterpolatedWaypoints;
         waypoints.add(0, start.get());
-        this.waypoints = interpolate(waypoints);
+        waypoints = interpolate(waypoints);
+        currentWaypointIndex = 0;
+        isPathComplete = false;
     }
 
     public List<Pose2d> interpolate(List<Pose2d> waypoints) {
