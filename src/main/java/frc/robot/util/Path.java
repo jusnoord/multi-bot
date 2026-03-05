@@ -35,19 +35,19 @@ public class Path {
     }
     public void init() {
         waypoints = uninterpolatedWaypoints;
-        waypoints.add(0, start.get());
+        // waypoints.add(0, start.get());
         waypoints = interpolate(waypoints);
         currentWaypointIndex = 0;
         isPathComplete = false;
     }
 
     public List<Pose2d> interpolate(List<Pose2d> waypoints) {
-        boolean invertRotation = Math.abs(waypoints.get(0).getRotation().minus(waypoints.get(1).getRotation()).getDegrees()) > 90;
-        if (invertRotation) {
-            for (int i = 1; i < waypoints.size(); i++) {
-                waypoints.set(i, new Pose2d(waypoints.get(i).getTranslation(), waypoints.get(i).getRotation().plus(Rotation2d.k180deg)));
-            }
-        }
+        // boolean invertRotation = Math.abs(waypoints.get(0).getRotation().minus(waypoints.get(1).getRotation()).getDegrees()) > 90;
+        // if (invertRotation) {
+        //     for (int i = 1; i < waypoints.size(); i++) {
+        //         waypoints.set(i, new Pose2d(waypoints.get(i).getTranslation(), waypoints.get(i).getRotation().plus(Rotation2d.k180deg)));
+        //     }
+        // }
         List<Pose2d> res = new ArrayList<>();
         double desiredDistance = lookAhead / 4;
         double desiredRotationDistance = rotationalLookAhead.getDegrees() / 4;
